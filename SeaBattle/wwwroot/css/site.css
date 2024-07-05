@@ -20,3 +20,29 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.shiptable {
+    margin: 40px;
+    margin-left: 150px;
+    margin-right:150px;
+    border-collapse: separate;
+    float: left;
+}
+
+.myblock {
+    background-color: lightgray;
+    border-color: black;
+    border-width: 6px;
+    font-size: 18px;
+    width: 40px;
+    height: 40px;
+}
+
+.enemyblock {
+    background-color: dimgrey;
+    border-color: black;
+    border-width: 6px;
+    font-size: 18px;
+    width: 40px;
+    height: 40px;
+}

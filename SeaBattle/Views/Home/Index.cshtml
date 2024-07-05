@@ -1,8 +1,77 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Sea Battle";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+
+<body>
+
+    <div class="text-center">
+        <h1 draggable="true" class="display-4">Морской бой</h1>
+
+        <table cellspacing="5" class="shiptable">
+            <thead>
+
+            </thead>
+            <tbody id="ftable">
+            </tbody>
+        </table>
+
+        <script>
+            a = @ViewData["TableCapacity"];
+            for (var i = 0; i < a; i++) {
+                var table1 = document.getElementById('ftable');
+                var rowrow = document.createElement('tr')
+
+                for (j = 0; j < a; j++) {
+                    var cell1 = document.createElement('td');
+                    cell1.classList.add('myblock');
+                    rowrow.appendChild(cell1);
+
+                }
+                table1.appendChild(rowrow);
+            }
+        </script>
+
+        <table cellspacing="5" class="shiptable" style="float: right">
+            <thead>
+            </thead>
+            <tbody id="stable">
+            </tbody>
+        </table>
+
+        <script>
+            a = @ViewData["TableCapacity"];
+            for (var i = 0; i < a; i++) {
+                var table1 = document.getElementById('stable');
+                var rowrow = document.createElement('tr')
+
+                for (j = 0; j < a; j++) {
+                    var cell1 = document.createElement('td');
+                    cell1.classList.add('enemyblock');
+                    rowrow.appendChild(cell1);
+
+                }
+                table1.appendChild(rowrow);
+            }
+        </script>
+
+        <ul>
+            @foreach (var ship in ViewBag.Ships)
+            {
+                <p>@ship.Lenght</p>
+            }
+        </ul>
+
+    </div>
+
+
+</body>
+</html>
