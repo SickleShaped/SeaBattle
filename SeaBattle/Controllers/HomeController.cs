@@ -1,11 +1,16 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Newtonsoft.Json;
 using SeaBattle.Models;
+using SeaBattle.Models.AuxilaryModels;
+using SeaBattle.Models.Enums;
+using SeaBattle.Models.Tables;
 using SeaBattle.Services;
 using System.Diagnostics;
 
 namespace SeaBattle.Controllers
 {
+
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -21,28 +26,23 @@ namespace SeaBattle.Controllers
         {
             ViewData["TableCapacity"] = 10;
 
-            List <Ship> shipList = new List<Ship>();
-            shipList.Add(new Ship(4));
-            shipList.Add(new Ship(3));
-            ViewBag.Ships = shipList;
-            
             return View();
         }
 
-        public void InitTables()
+        public IActionResult GetInitialData()
         {
-            
+            string json = _gameService.GetInitialData();
+
+            return Ok(json);
         }
 
-        public void GetShips()
+        public IActionResult PlaceShip(string json/*Table Table, byte shipLenght, ShipDirection direction*/)
         {
-             //GameService.GetShips();
+            string result = _gameService.PlaceShip(json);
+
+
+            return Ok(json);
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
     }
 }

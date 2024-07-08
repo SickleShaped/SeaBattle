@@ -9,14 +9,111 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <script src="https://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+    <script type="text/javascript">
+        if (localStorage.getItem('IsGameStarted') == null) {
+            $(document).ready(function () {
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("GetInitialData", "Home")',
+                    dataType: "json",
+                    success: function (result) {
+                       
+                        console.log(result)
+                        localStorage.setItem('IsGameStarted', result.IsGameStarted)
+                        localStorage.setItem('Ships', JSON.stringify(result.Ships))
+                        localStorage.setItem('PlayerTable', JSON.stringify(result.PlayerTable))
+                        localStorage.setItem('EnemyTable', JSON.stringify(result.EnemyTable))
+                        localStorage.setItem('IsPlayerTurn', result.IsPlayerTurn)
+                        localStorage.setItem('TablesSize', result.TablesSize)
+
+                        console.log(localStorage.getItem('IsGameStarted'))
+                        console.log(localStorage.getItem('IsPlayerTurn'))
+                        console.log(localStorage.getItem('Ships'))
+                        console.log(localStorage.getItem('PlayerTable'))
+                        console.log(localStorage.getItem('EnemyTable'))
+                        console.log(localStorage.getItem('TablesSize'))
+
+                    },
+                    error: function (error) {
+                        console.error('Error:', error);
+                    }
+                });
+            });
+        }
+        
+    </script>
 </head>
 
 <body>
 
     <div class="text-center">
+
+        <script>
+            function StartGame() {
+
+                window.localStorage.setItem('IsGameStarted', true)
+                console.log(window.localStorage.getItem('IsGameStarted'))
+            }
+
+            function RestartGame() {
+
+                window.localStorage.clear();
+                window.location.reload();
+            }
+
+            function PlaceShip(event) {
+                let target = event.target;
+                target.style.background = 'Red';
+                console.log(target.id)
+
+                let jsonparams = '{ "PlayerTable" : ' + localStorage.getItem('PlayerTable') + ', "ShipLenght" : 3, "Direction" : 0, "Cell" : ' + target.id + '}'
+                debugger;
+                console.log(jsonparams)
+
+                $.ajax({
+                    type: "Post",
+                    url: '@Url.Action("PlaceShip", "Home")',
+                    dataType: "json",
+                    data: jQuery.param({ json: jsonparams }),
+
+
+                    success: function (result) {
+
+
+                    },
+                    error: function (error) {
+                        console.error('Error:', error);
+                    }
+                });
+            }
+
+            function ReturnShips() {
+                return localStorage.getItem('Ships');
+            }
+        </script>
+
+        <script>
+            $(document).ready(function () {
+                var btn = document.getElementById('startbtn')
+                if (localStorage.getItem('IsGameStarted') ==false) {
+                    
+                    btn.style.display='none'
+                }
+                else
+                {
+                    btn.style.display=''
+                }
+
+            });
+
+        </script>
+
         <h1 draggable="true" class="display-4">Морской бой</h1>
 
-        <table cellspacing="5" class="shiptable">
+        <table cellspacing="5" class="shiptable-left">
             <thead>
 
             </thead>
@@ -25,7 +122,7 @@
         </table>
 
         <script>
-            a = @ViewData["TableCapacity"];
+            a = localStorage.getItem('TablesSize');
             for (var i = 0; i < a; i++) {
                 var table1 = document.getElementById('ftable');
                 var rowrow = document.createElement('tr')
@@ -33,6 +130,8 @@
                 for (j = 0; j < a; j++) {
                     var cell1 = document.createElement('td');
                     cell1.classList.add('myblock');
+                    cell1.setAttribute("onclick", "PlaceShip(event)");
+                    cell1.setAttribute("id", i*10+j);
                     rowrow.appendChild(cell1);
 
                 }
@@ -40,7 +139,7 @@
             }
         </script>
 
-        <table cellspacing="5" class="shiptable" style="float: right">
+        <table cellspacing="5" class="shiptable-right" style="float: right">
             <thead>
             </thead>
             <tbody id="stable">
@@ -48,7 +147,7 @@
         </table>
 
         <script>
-            a = @ViewData["TableCapacity"];
+            a = localStorage.getItem('TablesSize');
             for (var i = 0; i < a; i++) {
                 var table1 = document.getElementById('stable');
                 var rowrow = document.createElement('tr')
@@ -63,15 +162,31 @@
             }
         </script>
 
-        <ul>
-            @foreach (var ship in ViewBag.Ships)
-            {
-                <p>@ship.Lenght</p>
-            }
-        </ul>
+        <div>
+            <button id ="startbtn" onclick="StartGame()">НАчать игру</button>
+        </div>
 
+        <div>
+            <button id="restartbtn" onclick="RestartGame()" type="submit">Начать заново</button>
+        </div>
+
+        <script>
+            const ships = localStorage.getItem('Ships');
+
+            ships.forEach((item) = >
+                        const listItem = document.createElement('li');
+            listItem.textContent = item.Lenght;
+            document.querySelector('ul').appendChild(listItem);
+                        );
+        </script>
+
+        
+        
+        
     </div>
+    
 
 
 </body>
 </html>
+

@@ -21,10 +21,17 @@ body {
   margin-bottom: 60px;
 }
 
-.shiptable {
-    margin: 40px;
-    margin-left: 150px;
-    margin-right:150px;
+.shiptable-left {
+    margin-top: 40px;
+    margin-left:150px;
+    border-collapse: separate;
+    float: left;
+}
+
+
+.shiptable-right {
+    margin-top: 40px;
+    margin-right: 150px;
     border-collapse: separate;
     float: left;
 }

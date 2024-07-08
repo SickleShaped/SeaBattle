@@ -10,14 +10,13 @@ namespace SeaBattle
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddControllersWithViews();
-            builder.Services.AddDependencyInjection();
+            builder.Services.AddDependencyInjection(); //Нужно ли тут DI?
  
 
             var app = builder.Build();
 
             if (!app.Environment.IsDevelopment())
             {
-                app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
 

@@ -1,42 +1,84 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Newtonsoft.Json;
 using SeaBattle.Models;
+using SeaBattle.Models.AuxilaryModels;
+using SeaBattle.Models.Enums;
 using SeaBattle.Models.Tables;
+using System.Drawing;
 
 namespace SeaBattle.Services
 {
     public class GameService:IGameService
     {
-        public string GetShips()
+
+        public string GetInitialData()
         {
-            List<Ship> ships = new List<Ship>();
+            byte tableSize = 10;
+            Table playerTable = GetTable(tableSize, true);
+            Table enemyTable = GetTable(tableSize, false);
+            var ships = GetShips();
+
+            var initGameModel = GetInitGameModel(playerTable, enemyTable, ships);
+            string json = JsonConvert.SerializeObject(initGameModel);
+            return json;
+        }
+
+
+
+        /// <summary>
+        /// Получить InitGameModel для начала игры
+        /// </summary>
+        /// <param name="tables"></param>
+        /// <param name="ships"></param>
+        /// <returns></returns>
+        public InitGameModelDto GetInitGameModel(Table playerTable, Table enemytable, List<Ship> ships)
+        {
+            var initGameModel = new InitGameModelDto(playerTable, enemytable, ships);
+            return initGameModel;
+        }
+
+        /// <summary>
+        /// Получить List кораблей для начала игры
+        /// </summary>
+        /// <returns></returns>
+        public List<Ship> GetShips()
+        {
+            var ships = new List<Ship>();
 
             ships.Add(new Ship(4));
-
-            for(int i = 0; i==2;i++)
-            {
-                ships.Add(new Ship(3));
-            }
-
-            for (int i = 0; i == 3; i++)
-            {
-                ships.Add(new Ship(2));
-            }
-
-            for (int i = 0; i == 4; i++)
-            {
-                ships.Add(new Ship(1));
-            }
-
-            return JsonConvert.SerializeObject(ships);
+            ships.Add(new Ship(3));
+            ships.Add(new Ship(3));
+            ships.Add(new Ship(2));
+            ships.Add(new Ship(2));
+            ships.Add(new Ship(2));
+            ships.Add(new Ship(1));
+            ships.Add(new Ship(1));
+            ships.Add(new Ship(1));
+            ships.Add(new Ship(1));
+            return ships;
         }
 
-        public string InitTables(byte size)
+        /// <summary>
+        /// Получить List таблиц для начала игры
+        /// </summary>
+        /// <returns></returns>
+        public Table GetTable(byte size, bool belongsPlayers)
         {
-            List<Table> tables = new List<Table>();
-            tables.Add(new Table(size, true));
-            tables.Add(new Table(size, false));
-            return JsonConvert.SerializeObject(tables);
+            Table table = new Table(size, belongsPlayers);
+
+            return table;
         }
+
+        public string PlaceShip(string json)
+        {
+            PlaceShipDto dto = JsonConvert.DeserializeObject<PlaceShipDto>(json);
+
+
+
+            string result = "";
+            return result;
+        }
+
 
     }
 }
