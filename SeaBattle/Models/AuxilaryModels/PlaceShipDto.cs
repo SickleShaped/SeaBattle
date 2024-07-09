@@ -7,8 +7,7 @@ namespace SeaBattle.Models.AuxilaryModels
     {
         public Table PlayerTable { get; set; }
         public byte ShipLenght { get; set; }
-
-        ShipDirection Direction { get; set; }
+        public ShipDirection Direction { get; set; }
 
         public byte Cell { get; set; }
     }

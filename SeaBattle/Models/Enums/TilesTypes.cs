@@ -2,10 +2,12 @@
 {
     public enum TilesType
     {
-        FreeUnchecked,
-        FreeChecked,
-        ShipUnchecked,
-        ShipChecked
-       
+        Free,
+        Ship
+    }
+    public enum TilesVisibility
+    {
+        Checked,
+        Unchecked,
     }
 }

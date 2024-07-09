@@ -44,7 +44,6 @@ namespace SeaBattle.Services
         public List<Ship> GetShips()
         {
             var ships = new List<Ship>();
-
             ships.Add(new Ship(4));
             ships.Add(new Ship(3));
             ships.Add(new Ship(3));
@@ -73,11 +72,88 @@ namespace SeaBattle.Services
         {
             PlaceShipDto dto = JsonConvert.DeserializeObject<PlaceShipDto>(json);
 
+            switch(dto.Direction)
+            {
+                case ShipDirection.Horisontal:
+                    PlaceHorisontalShip(dto);
+                    
+                    break;
 
+                case ShipDirection.Vertical:
+                    PlaceVerticalShip(dto);
+                    break;
+            }
 
-            string result = "";
+            string result = JsonConvert.SerializeObject(dto);
+
             return result;
         }
+
+        public PlaceShipDto PlaceVerticalShip(PlaceShipDto dto)
+        {
+            int lenght = dto.PlayerTable.Cells.GetLength(0);
+            int j = dto.Cell % lenght;
+            int i = (dto.Cell - j) / 10;
+
+
+            if (i + dto.ShipLenght > lenght)
+            {
+                throw new Exception("Корабль за пределами массива");
+            }
+            for (int ii = i - 1; ii <= i + dto.ShipLenght + 1; ii++)
+            {
+                if (ii < lenght) continue;
+                for (int jj = j - 1; jj <= j  + 1; jj++)
+                {
+                    if (jj < lenght) continue;
+                    if (dto.PlayerTable.Cells[ii, jj] == TilesType.Ship)
+                    {
+                        throw new Exception("Необходимая область уже занята другим кораблем");
+                    }
+
+                }
+            }
+            for (int ii = i; ii < i + dto.ShipLenght; ii++)
+            {
+                dto.PlayerTable.Cells[ii, j] = TilesType.Ship;
+            }
+
+            return dto;
+        }
+
+        public PlaceShipDto PlaceHorisontalShip(PlaceShipDto dto)
+        {
+            int lenght = dto.PlayerTable.Cells.GetLength(0);
+            int j = dto.Cell % lenght;
+            int i = (dto.Cell - j) / 10;
+            
+
+            if (j+dto.ShipLenght > lenght)
+            {
+                throw new Exception("Корабль за пределами массива");
+            }
+            for (int ii = i - 1; ii <= i + 1; ii++)
+            {
+                if (ii < lenght) continue;
+                for (int jj = j - 1; jj <= j + dto.ShipLenght + 1; jj++)
+                {
+                    if(jj < lenght) continue;
+                    if (dto.PlayerTable.Cells[ii, jj] == TilesType.Ship)
+                    {
+                        throw new Exception("Необходимая область уже занята другим кораблем");
+                    }
+
+                }
+            }
+            for(int jj = j; jj<j+dto.ShipLenght; jj++)
+            {
+                dto.PlayerTable.Cells[i, jj] = TilesType.Ship;
+            }
+
+            return dto;
+        }
+
+
 
 
     }

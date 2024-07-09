@@ -12,6 +12,8 @@ namespace SeaBattle.Models.Tables
         /// </summary>
         public TilesType[,] Cells { get; set; }
 
+        public TilesVisibility[,] CellsVisibility { get; set; }
+
         /// <summary>
         /// Принадлежит ли поле игроку. True - если да, False - если принадлежит боту/сопернику
         /// </summary>
@@ -24,7 +26,15 @@ namespace SeaBattle.Models.Tables
             {
                 for (int j = 0; j < size; j++)
                 {
-                    Cells[i,j]=TilesType.FreeUnchecked;
+                    Cells[i,j]=TilesType.Free;
+                    if(BelongsPlayer)
+                    {
+                        CellsVisibility[i,j] = TilesVisibility.Checked;
+                    }
+                    else
+                    {
+                        CellsVisibility[i, j] = TilesVisibility.Unchecked;
+                    }
                 }
             }
         }

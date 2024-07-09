@@ -9,6 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <script src="~/js/scripts.js" asp-append-version="true"></script>
 
     <script src="https://code.jquery.com/jquery-1.9.1.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
@@ -82,7 +83,7 @@
 
                     success: function (result) {
 
-
+                        console.log(result)
                     },
                     error: function (error) {
                         console.error('Error:', error);
@@ -93,18 +94,15 @@
             function ReturnShips() {
                 return localStorage.getItem('Ships');
             }
-        </script>
 
-        <script>
             $(document).ready(function () {
                 var btn = document.getElementById('startbtn')
-                if (localStorage.getItem('IsGameStarted') ==false) {
-                    
-                    btn.style.display='none'
+                if (localStorage.getItem('IsGameStarted') == false) {
+
+                    btn.style.display = 'none'
                 }
-                else
-                {
-                    btn.style.display=''
+                else {
+                    btn.style.display = ''
                 }
 
             });
@@ -121,6 +119,13 @@
             </tbody>
         </table>
 
+        <table cellspacing="5" class="shiptable-right" style="float: right">
+            <thead>
+            </thead>
+                <tbody id="stable">
+            </tbody>
+        </table>
+
         <script>
             a = localStorage.getItem('TablesSize');
             for (var i = 0; i < a; i++) {
@@ -131,24 +136,15 @@
                     var cell1 = document.createElement('td');
                     cell1.classList.add('myblock');
                     cell1.setAttribute("onclick", "PlaceShip(event)");
-                    cell1.setAttribute("id", i*10+j);
+                    cell1.setAttribute("id", i * 10 + j);
                     rowrow.appendChild(cell1);
 
                 }
                 table1.appendChild(rowrow);
             }
-        </script>
 
-        <table cellspacing="5" class="shiptable-right" style="float: right">
-            <thead>
-            </thead>
-            <tbody id="stable">
-            </tbody>
-        </table>
-
-        <script>
-            a = localStorage.getItem('TablesSize');
-            for (var i = 0; i < a; i++) {
+            b = localStorage.getItem('TablesSize');
+            for (var i = 0; i < b; i++) {
                 var table1 = document.getElementById('stable');
                 var rowrow = document.createElement('tr')
 
@@ -169,24 +165,8 @@
         <div>
             <button id="restartbtn" onclick="RestartGame()" type="submit">Начать заново</button>
         </div>
-
-        <script>
-            const ships = localStorage.getItem('Ships');
-
-            ships.forEach((item) = >
-                        const listItem = document.createElement('li');
-            listItem.textContent = item.Lenght;
-            document.querySelector('ul').appendChild(listItem);
-                        );
-        </script>
-
         
-        
-        
-    </div>
-    
-
-
+    </div> 
 </body>
 </html>
 

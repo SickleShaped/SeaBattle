@@ -41,7 +41,7 @@ namespace SeaBattle.Controllers
             string result = _gameService.PlaceShip(json);
 
 
-            return Ok(json);
+            return Ok(result);
         }
 
     }
