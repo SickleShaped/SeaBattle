@@ -10,6 +10,7 @@ namespace SeaBattle
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddControllersWithViews();
+            builder.Services.AddMemoryCache();
             builder.Services.AddDependencyInjection(); //Нужно ли тут DI?
  
 

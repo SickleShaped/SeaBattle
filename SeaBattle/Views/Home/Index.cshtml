@@ -9,107 +9,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <script src="~/js/scripts.js" asp-append-version="true"></script>
 
     <script src="https://code.jquery.com/jquery-1.9.1.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
-    <script type="text/javascript">
-        if (localStorage.getItem('IsGameStarted') == null) {
-            $(document).ready(function () {
-                $.ajax({
-                    type: "GET",
-                    url: '@Url.Action("GetInitialData", "Home")',
-                    dataType: "json",
-                    success: function (result) {
-                       
-                        console.log(result)
-                        localStorage.setItem('IsGameStarted', result.IsGameStarted)
-                        localStorage.setItem('Ships', JSON.stringify(result.Ships))
-                        localStorage.setItem('PlayerTable', JSON.stringify(result.PlayerTable))
-                        localStorage.setItem('EnemyTable', JSON.stringify(result.EnemyTable))
-                        localStorage.setItem('IsPlayerTurn', result.IsPlayerTurn)
-                        localStorage.setItem('TablesSize', result.TablesSize)
-
-                        console.log(localStorage.getItem('IsGameStarted'))
-                        console.log(localStorage.getItem('IsPlayerTurn'))
-                        console.log(localStorage.getItem('Ships'))
-                        console.log(localStorage.getItem('PlayerTable'))
-                        console.log(localStorage.getItem('EnemyTable'))
-                        console.log(localStorage.getItem('TablesSize'))
-
-                    },
-                    error: function (error) {
-                        console.error('Error:', error);
-                    }
-                });
-            });
-        }
-        
-    </script>
+    
 </head>
 
 <body>
 
     <div class="text-center">
 
-        <script>
-            function StartGame() {
+        <script type="text/javascript" src="~/js/scripts/StartGame.js"> </script>
+        <script type="text/javascript" src="~/js/scripts/RestartGame.js"> </script>
+        <script type="text/javascript" src="~/js/scripts/PlaceShip.js"> </script>
+        <script type="text/javascript" src="~/js/scripts/FlipShip.js"> </script>
 
-                window.localStorage.setItem('IsGameStarted', true)
-                console.log(window.localStorage.getItem('IsGameStarted'))
-            }
-
-            function RestartGame() {
-
-                window.localStorage.clear();
-                window.location.reload();
-            }
-
-            function PlaceShip(event) {
-                let target = event.target;
-                target.style.background = 'Red';
-                console.log(target.id)
-
-                let jsonparams = '{ "PlayerTable" : ' + localStorage.getItem('PlayerTable') + ', "ShipLenght" : 3, "Direction" : 0, "Cell" : ' + target.id + '}'
-                debugger;
-                console.log(jsonparams)
-
-                $.ajax({
-                    type: "Post",
-                    url: '@Url.Action("PlaceShip", "Home")',
-                    dataType: "json",
-                    data: jQuery.param({ json: jsonparams }),
-
-
-                    success: function (result) {
-
-                        console.log(result)
-                    },
-                    error: function (error) {
-                        console.error('Error:', error);
-                    }
-                });
-            }
-
-            function ReturnShips() {
-                return localStorage.getItem('Ships');
-            }
-
-            $(document).ready(function () {
-                var btn = document.getElementById('startbtn')
-                if (localStorage.getItem('IsGameStarted') == false) {
-
-                    btn.style.display = 'none'
-                }
-                else {
-                    btn.style.display = ''
-                }
-
-            });
-
-        </script>
 
         <h1 draggable="true" class="display-4">Морской бой</h1>
+
+        <div id="shipWindow" style="shipplacingwindow">
+        </div>
+
+        <script type="text/javascript" src="~/js/ElementContent/ShipWindow.js"> </script>
 
         <table cellspacing="5" class="shiptable-left">
             <thead>
@@ -126,37 +47,7 @@
             </tbody>
         </table>
 
-        <script>
-            a = localStorage.getItem('TablesSize');
-            for (var i = 0; i < a; i++) {
-                var table1 = document.getElementById('ftable');
-                var rowrow = document.createElement('tr')
-
-                for (j = 0; j < a; j++) {
-                    var cell1 = document.createElement('td');
-                    cell1.classList.add('myblock');
-                    cell1.setAttribute("onclick", "PlaceShip(event)");
-                    cell1.setAttribute("id", i * 10 + j);
-                    rowrow.appendChild(cell1);
-
-                }
-                table1.appendChild(rowrow);
-            }
-
-            b = localStorage.getItem('TablesSize');
-            for (var i = 0; i < b; i++) {
-                var table1 = document.getElementById('stable');
-                var rowrow = document.createElement('tr')
-
-                for (j = 0; j < a; j++) {
-                    var cell1 = document.createElement('td');
-                    cell1.classList.add('enemyblock');
-                    rowrow.appendChild(cell1);
-
-                }
-                table1.appendChild(rowrow);
-            }
-        </script>
+        <script type="text/javascript" src="~/js/ElementContent/MakeTables.js"> </script>
 
         <div>
             <button id ="startbtn" onclick="StartGame()">НАчать игру</button>
@@ -166,6 +57,8 @@
             <button id="restartbtn" onclick="RestartGame()" type="submit">Начать заново</button>
         </div>
         
+        
+
     </div> 
 </body>
 </html>

@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Newtonsoft.Json;
 using SeaBattle.Models;
 using SeaBattle.Models.AuxilaryModels;
+using SeaBattle.Models.DbModels;
 using SeaBattle.Models.Enums;
 using SeaBattle.Models.Tables;
-using SeaBattle.Services;
+using SeaBattle.Services.Bot;
+using SeaBattle.Services.Game;
 using System.Diagnostics;
 
 namespace SeaBattle.Controllers
@@ -15,34 +17,45 @@ namespace SeaBattle.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IGameService _gameService;
+        private readonly IBotService _botService;
 
-        public HomeController(ILogger<HomeController> logger, IGameService service)
+        public HomeController(ILogger<HomeController> logger, IGameService gameService, IBotService botService)
         {
             _logger = logger;
-            _gameService = service;
+            _gameService = gameService;
+            _botService = botService;
+        }
+
+        public IActionResult GetGame()
+        {
+            var data = _gameService.GetGameData();
+            return Ok(data);
+        }
+
+        public IActionResult RestartGame()
+        {
+            var data = _gameService.RestartGame();
+            return Ok(data);
+        }
+
+
+
+        public IActionResult InitGame()
+        {
+            //Guid sessionId = Guid.NewGuid();
+            //TablesDB tablesDB = new TablesDB() { SessionId = sessionId};
+            //GameCondition conditionDb = new GameCondition();
+
+            return Ok();
         }
 
         public IActionResult Index()
         {
-            ViewData["TableCapacity"] = 10;
 
             return View();
         }
 
-        public IActionResult GetInitialData()
-        {
-            string json = _gameService.GetInitialData();
 
-            return Ok(json);
-        }
-
-        public IActionResult PlaceShip(string json/*Table Table, byte shipLenght, ShipDirection direction*/)
-        {
-            string result = _gameService.PlaceShip(json);
-
-
-            return Ok(result);
-        }
 
     }
 }
