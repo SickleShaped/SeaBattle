@@ -1,5 +1,4 @@
 ﻿using SeaBattle.Models;
-using SeaBattle.Models.Tables;
 
 namespace SeaBattle.Services.Bot
 {

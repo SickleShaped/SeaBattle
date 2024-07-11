@@ -1,5 +1,4 @@
 ﻿using SeaBattle.Models.DbModels;
-using SeaBattle.Models.Tables;
 
 namespace SeaBattle.Models.AuxilaryModels
 {

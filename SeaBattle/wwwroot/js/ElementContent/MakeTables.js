@@ -6,8 +6,8 @@ $.ajax({
     dataType: "json",
     success: function (result) {
 
+        console.log(result);
         
-
         return result
     },
     error: function (error) {
@@ -41,6 +41,8 @@ for (var i = 0; i < 10; i++)
     {
         var cell1 = document.createElement('td');
         cell1.classList.add('enemyblock');
+        cell1.setAttribute("onclick", "Shoot(event)");
+        cell1.setAttribute("id", i * 10 + j + 100);
         rowrow.appendChild(cell1);
 
     }

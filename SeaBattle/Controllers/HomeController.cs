@@ -5,7 +5,6 @@ using SeaBattle.Models;
 using SeaBattle.Models.AuxilaryModels;
 using SeaBattle.Models.DbModels;
 using SeaBattle.Models.Enums;
-using SeaBattle.Models.Tables;
 using SeaBattle.Services.Bot;
 using SeaBattle.Services.Game;
 using System.Diagnostics;
@@ -38,24 +37,22 @@ namespace SeaBattle.Controllers
             return Ok(data);
         }
 
-
-
-        public IActionResult InitGame()
-        {
-            //Guid sessionId = Guid.NewGuid();
-            //TablesDB tablesDB = new TablesDB() { SessionId = sessionId};
-            //GameCondition conditionDb = new GameCondition();
-
-            return Ok();
-        }
-
         public IActionResult Index()
         {
 
             return View();
         }
 
+        public IActionResult StartGame()
+        {
+            try
+            {
+                _gameService.StartGame();
+            }
+            catch (Exception ex) { return BadRequest(); }
 
+            return Ok("true");
+        }
 
     }
 }

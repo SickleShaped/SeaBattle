@@ -1,6 +1,6 @@
 ﻿using SeaBattle.Models.Enums;
 
-namespace SeaBattle.Models.Tables
+namespace SeaBattle.Models
 {
     /// <summary>
     /// Класс, представляющий собой таблицу
@@ -21,16 +21,16 @@ namespace SeaBattle.Models.Tables
         public Table(bool belongsPlayer)
         {
             BelongsPlayer = belongsPlayer;
-            Cells = new TilesType[10,10];
+            Cells = new TilesType[10, 10];
             CellsVisibility = new TilesVisibility[10, 10];
             for (int i = 0; i < 10; i++)
             {
                 for (int j = 0; j < 10; j++)
                 {
-                    Cells[i,j]=TilesType.Free;
-                    if(BelongsPlayer)
+                    Cells[i, j] = TilesType.Free;
+                    if (BelongsPlayer)
                     {
-                        CellsVisibility[i,j] = TilesVisibility.Checked;
+                        CellsVisibility[i, j] = TilesVisibility.Checked;
                     }
                     else
                     {
@@ -40,7 +40,7 @@ namespace SeaBattle.Models.Tables
             }
         }
 
-       
+
 
     }
 }

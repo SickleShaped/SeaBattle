@@ -8,7 +8,7 @@
 
             sessionStorage.setItem("ShipLenght", result.ShipLenght)
 
-            if (result.Direction) {
+            if (result.Direction == 0) {
                 sessionStorage.setItem("textposition", "Горизонтально")
             }
             else {

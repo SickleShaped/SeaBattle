@@ -1,5 +1,17 @@
 ﻿function StartGame() {
+    window.sessionStorage.clear();
+    $.ajax({
+        type: "Get",
+        url: 'https://localhost:7031/Home/StartGame',
+        success: function (result) {
+            console.log(result)
 
-    localStorage.setItem('IsGameStarted', true)
-    //console.log(window.localStorage.getItem('IsGameStarted'))
+            //window.location.reload();
+        },
+        error: function (error) {
+            console.error('Error:', error);
+        }
+    });
+
+    //window.location.reload();
 }

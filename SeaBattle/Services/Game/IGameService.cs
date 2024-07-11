@@ -1,4 +1,4 @@
-﻿using SeaBattle.Models.Tables;
+﻿
 using SeaBattle.Models;
 using SeaBattle.Models.Enums;
 
@@ -11,13 +11,8 @@ namespace SeaBattle.Services.Game
         public string GetGameData();
         public string RestartGame();
 
+        public string StartGame();
 
-
-
-
-        public string GetInitialData();
-        public string PlaceShip(string json);
-        public Table GetTable( bool belongsPlayers);
 
     }
 

@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using SeaBattle.Models.AuxilaryModels;
 using SeaBattle.Models.Enums;
 using SeaBattle.Services.Bot;
 using SeaBattle.Services.Game;
@@ -25,21 +27,30 @@ namespace SeaBattle.Controllers
             return Ok(result);
         }
 
-        public IActionResult PlaceShip(int CellId, int ShipId, ShipDirection direction)
+        public IActionResult PlaceShip(string json)
         {
-            string result = "";
-            /*
             try
             {
-                result = _gameService.PlaceShip(json);
+                _shipService.PlaceShip(json);
             }
             catch (Exception ex) { return BadRequest(); }
-            */
+            bool zz = true;
+            string x = JsonConvert.SerializeObject(zz);
+            return Ok(x);
+        }
 
-
+        public IActionResult GetCurrentShipLenght()
+        {
+            var result = _shipService.GetCurrentShipLenght();
 
             return Ok(result);
         }
+
+        //public IActionResult Shoot(string json)
+        //{
+
+        //}
+
 
     }
 }

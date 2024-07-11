@@ -5,7 +5,6 @@ using SeaBattle.Models;
 using SeaBattle.Models.AuxilaryModels;
 using SeaBattle.Models.DbModels;
 using SeaBattle.Models.Enums;
-using SeaBattle.Models.Tables;
 using SeaBattle.Services.Bot;
 using System.Drawing;
 
@@ -29,10 +28,10 @@ namespace SeaBattle.Services.Game
             Table PlayerTable = new Table(true);
             Table EnemyTable = _botService.MakeTable(ships);
 
-            _cache.Set("Condition", condition);
-            _cache.Set("PlayerTable", PlayerTable);
-            _cache.Set("EnemyTable", EnemyTable);
-            _cache.Set("CurrentShip", 0);
+            _cache.Set("Condition", condition, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(30)));
+            _cache.Set("PlayerTable", PlayerTable, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(30)));
+            _cache.Set("EnemyTable", EnemyTable, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(30)));
+            _cache.Set("CurrentShip", 0, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(30)));
 
 
         }
@@ -77,139 +76,40 @@ namespace SeaBattle.Services.Game
 
         public string RestartGame()
         {
-            _cache.Dispose();
             InitGameData();
             string json = GetGameData();
             return json;
         }
 
-
-
-
-
-
-
-
-
-
-        public string GetInitialData()
+        public string StartGame()
         {
-            var ships = GetShips();
-            Table playerTable = GetTable(true);
-
-            Table enemyTable = _botService.MakeTable(ships);
+            _cache.TryGetValue("Condition", out GameCondition condition);
+           
 
 
-            var initGameModel = GetInitGameModel(playerTable, enemyTable, ships);
-            string json = JsonConvert.SerializeObject(initGameModel);
-            return json;
-        }
+            if (condition.IsGameStarted == true) { throw new Exception("Игра уже началась"); }
 
+            _cache.TryGetValue("PlayerTable", out Table PlayerTable);
 
-
-        /// <summary>
-        /// Получить InitGameModel для начала игры
-        /// </summary>
-        /// <param name="tables"></param>
-        /// <param name="ships"></param>
-        /// <returns></returns>
-        public InitGameModelDto GetInitGameModel(Table playerTable, Table enemytable, List<Ship> ships)
-        {
-            var initGameModel = new InitGameModelDto(playerTable, enemytable, ships);
-            return initGameModel;
-        }
-
-
-
-        /// <summary>
-        /// Получить List таблиц для начала игры
-        /// </summary>
-        /// <returns></returns>
-        public Table GetTable(bool belongsPlayers)
-        {
-            Table table = new Table(belongsPlayers);
-
-            return table;
-        }
-
-        public string PlaceShip(string json)
-        {
-            PlaceShipDto dto = JsonConvert.DeserializeObject<PlaceShipDto>(json);
-            int ii;
-            int jj;
-            GetCoordinates(dto, out ii, out jj);
-
-            int lenght = dto.PlayerTable.Cells.GetLength(0);
-
-            if (ii + dto.ShipLenght > lenght)
+            int shipsForPoints = 0;
+            for (int i = 0; i < 10; i++)
             {
-                throw new Exception("Корабль за пределами массива");
-            }
-
-            for (int i = ii - 1; i < ii + dto.ShipLenght + 1; i++)
-            {
-                if (i >= lenght || i < 0) continue;
-
-                for (int j = jj - 1; j <= jj + 1; j++)
+                for (int j = 0; j < 10; j++)
                 {
-                    if (j >= lenght || j < 0) continue;
-                    if (dto.Direction == ShipDirection.Vertical)
+                    if (PlayerTable.Cells[i, j] == TilesType.Ship)
                     {
-                        if (dto.PlayerTable.Cells[i, j] == TilesType.Ship)
-                        {
-                            throw new Exception("Необходимая область уже занята другим кораблем");
-                        }
+                        shipsForPoints++;
                     }
-                    else
-                    {
-                        if (dto.PlayerTable.Cells[j, i] == TilesType.Ship)
-                        {
-                            throw new Exception("Необходимая область уже занята другим кораблем");
-                        }
-                    }
-
                 }
             }
-            for (int i = ii; i < ii + dto.ShipLenght; i++)
-            {
-                if (dto.Direction == ShipDirection.Vertical)
-                {
-                    dto.PlayerTable.Cells[i, jj] = TilesType.Ship;
-                }
-                else
-                {
-                    dto.PlayerTable.Cells[jj, i] = TilesType.Ship;
-                }
 
-            }
+            if (shipsForPoints != condition.WinStore) { throw new Exception("Еще не все корабли расставлены!"); }
 
-            string result = JsonConvert.SerializeObject(dto);
 
-            return result;
+            condition.IsGameStarted = true;
+            _cache.Set("Condition", condition);
+            return "true";
         }
-
-        private void GetCoordinates(PlaceShipDto dto, out int ii, out int jj)
-        {
-            int lenght = dto.PlayerTable.Cells.GetLength(0);
-            int cell_x = dto.Cell % lenght;
-            int cell_y = (dto.Cell - cell_x) / 10;
-
-            if (dto.Direction == ShipDirection.Horisontal)
-            {
-                jj = cell_y;
-                ii = cell_x;
-            }
-            else
-            {
-                jj = cell_x;
-                ii = cell_y;
-            }
-        }
-
-       
-
-
-
 
     }
 }

@@ -1,5 +1,4 @@
-﻿using SeaBattle.Models.Tables;
-using System.Security.Cryptography.X509Certificates;
+﻿using System.Security.Cryptography.X509Certificates;
 
 namespace SeaBattle.Models.AuxilaryModels
 {
