@@ -1,21 +1,8 @@
-﻿using SeaBattle.Models.DbModels;
+﻿namespace SeaBattle.Models.AuxilaryModels;
 
-namespace SeaBattle.Models.AuxilaryModels
+public class FullGameDto(Table playerTable, Table enemyTable, GameCondition condition)
 {
-    public class FullGameDto
-    {
-        public Table PlayerTable { get; set; }
-        public Table EnemyTable { get; set; }
-        public GameCondition Condition { get; set; }
-
-
-        public FullGameDto() { }
-
-        public FullGameDto(Table playerTable, Table enemyTable, GameCondition condition)
-        {
-            PlayerTable = playerTable;
-            EnemyTable = enemyTable;
-            Condition = condition;
-        }
-    }
+    public Table PlayerTable { get; set; } = playerTable;
+    public Table EnemyTable { get; set; } = enemyTable;
+    public GameCondition Condition { get; set; } = condition;
 }

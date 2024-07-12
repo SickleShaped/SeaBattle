@@ -2,6 +2,6 @@
 {
     public class CurrentShipLenghtDto
     {
-        public int Lenght {  get; set; }
+        public int Lenght { get; set; }
     }
 }

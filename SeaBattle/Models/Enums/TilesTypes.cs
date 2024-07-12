@@ -7,7 +7,8 @@
     }
     public enum TilesVisibility
     {
-        Checked,
         Unchecked,
+        Checked,
+       
     }
 }

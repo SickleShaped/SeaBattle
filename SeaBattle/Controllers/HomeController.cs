@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Newtonsoft.Json;
 using SeaBattle.Models;
 using SeaBattle.Models.AuxilaryModels;
-using SeaBattle.Models.DbModels;
 using SeaBattle.Models.Enums;
 using SeaBattle.Services.Bot;
 using SeaBattle.Services.Game;
@@ -31,18 +30,30 @@ namespace SeaBattle.Controllers
             return Ok(data);
         }
 
+        /// <summary>
+        /// Рестартнуть игру
+        /// </summary>
+        /// <returns></returns>
         public IActionResult RestartGame()
         {
             var data = _gameService.RestartGame();
             return Ok(data);
         }
 
+        /// <summary>
+        /// Отрисовка старта
+        /// </summary>
+        /// <returns></returns>
         public IActionResult Index()
         {
 
             return View();
         }
 
+        /// <summary>
+        /// Начать игру
+        /// </summary>
+        /// <returns></returns>
         public IActionResult StartGame()
         {
             try

@@ -5,5 +5,7 @@ namespace SeaBattle.Services.Bot
     public interface IBotService
     {
         public Table MakeTable(List<Ship> ships);
+
+        public void Shoot();
     }
 }

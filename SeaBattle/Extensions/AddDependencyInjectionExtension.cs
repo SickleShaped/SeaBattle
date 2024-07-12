@@ -2,6 +2,7 @@
 using SeaBattle.Services.Bot;
 using SeaBattle.Services.Game;
 using SeaBattle.Services.ShipService;
+using SeaBattle.Services.UserService;
 
 namespace SeaBattle.Extensions
 {
@@ -11,7 +12,9 @@ namespace SeaBattle.Extensions
         {
             services.AddTransient<IGameService, GameService>();
             services.AddTransient<IBotService, BotService>();
+            services.AddTransient<IUserService, UserService>();
             services.AddTransient<IShipService, ShipService>();
+
 
             return services;
         }

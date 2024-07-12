@@ -1,5 +1,6 @@
 ﻿
 using SeaBattle.Models;
+using SeaBattle.Models.AuxilaryModels;
 using SeaBattle.Models.Enums;
 
 namespace SeaBattle.Services.Game
@@ -10,8 +11,9 @@ namespace SeaBattle.Services.Game
         public List<Ship> GetShips();
         public string GetGameData();
         public string RestartGame();
-
         public string StartGame();
+        public string MakeTurn(string json);
+        public bool CheckVictory(Table table, GameCondition condition);
 
 
     }
