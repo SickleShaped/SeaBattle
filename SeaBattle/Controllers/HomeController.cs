@@ -62,7 +62,7 @@ namespace SeaBattle.Controllers
             }
             catch (Exception ex) { return BadRequest(); }
 
-            return Ok("true");
+            return Ok(true);
         }
 
     }

@@ -45,14 +45,13 @@ namespace SeaBattle.Controllers
         /// <returns></returns>
         public IActionResult Shoot(string json)
         {
-            string result;
             try
             {
-                result = _gameService.MakeTurn(json);
+                _gameService.MakeTurn(json);
             }
-            catch (Exception ex ) { return BadRequest(); }
+            catch { return BadRequest(); }
 
-            return Ok(result);
+            return Ok(true);
         }
     }
 }

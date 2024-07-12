@@ -82,7 +82,7 @@ namespace SeaBattle.Services.Game
             return json;
         }
 
-        public string StartGame()
+        public void StartGame()
         {
             _cache.TryGetValue("Condition", out GameCondition condition);
            
@@ -108,8 +108,7 @@ namespace SeaBattle.Services.Game
 
 
             condition.IsGameStarted = true;
-            _cache.Set("Condition", condition);
-            return "true";
+            _cache.Set("Condition", condition);;
         }
 
         public bool CheckVictory(Table table, GameCondition condition)
@@ -135,7 +134,7 @@ namespace SeaBattle.Services.Game
             return false;
         }
 
-        public string MakeTurn(string json)
+        public void MakeTurn(string json)
         {
             _cache.TryGetValue("Condition", out GameCondition condition);
             if (condition.IsGameStarted == false || condition.IsGameFinished == true) { throw new Exception("Игра не началась или уже закочилась!"); }
@@ -159,7 +158,7 @@ namespace SeaBattle.Services.Game
             if (CheckVictory(EnemyTable, condition))
             {
                 condition.PlayerWin = true;
-                return "false";
+                return;
             }
 
             _botService.Shoot();
@@ -167,10 +166,10 @@ namespace SeaBattle.Services.Game
             if(CheckVictory(EnemyTable,condition))
             {
                 condition.BotWin = true;
-                return "false";
+                return;
             }
             
-            return "true";
+            return;
 
         }
 
