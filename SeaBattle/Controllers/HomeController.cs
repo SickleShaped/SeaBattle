@@ -10,7 +10,9 @@ using System.Diagnostics;
 
 namespace SeaBattle.Controllers
 {
-
+    /// <summary>
+    /// Основной контроллер
+    /// </summary>
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -24,6 +26,10 @@ namespace SeaBattle.Controllers
             _botService = botService;
         }
 
+        /// <summary>
+        /// Получить текущее состояние игры
+        /// </summary>
+        /// <returns></returns>
         public IActionResult GetGame()
         {
             var data = _gameService.GetGameData();
@@ -46,7 +52,6 @@ namespace SeaBattle.Controllers
         /// <returns></returns>
         public IActionResult Index()
         {
-
             return View();
         }
 

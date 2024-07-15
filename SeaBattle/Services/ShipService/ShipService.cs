@@ -16,6 +16,10 @@ namespace SeaBattle.Services.ShipService
             _cache = cache;
         }
 
+        /// <summary>
+        /// Повернуть корабль
+        /// </summary>
+        /// <returns></returns>
         public string FlipShip()
         {
             CurrentShipDto dto = new CurrentShipDto();
@@ -37,7 +41,13 @@ namespace SeaBattle.Services.ShipService
             return json;
         }
 
-        
+        /// <summary>
+        /// получить координаты для того, чтобы поставить корабль. Разные значенря в зависимости от поворота корабля
+        /// </summary>
+        /// <param name="cellId"></param>
+        /// <param name="direction"></param>
+        /// <param name="ii"></param>
+        /// <param name="jj"></param>
         public void GetFlipShipCoordinates(int cellId, ShipDirection direction,  out int ii, out int jj)
         {
             int lenght = 10;
@@ -55,7 +65,11 @@ namespace SeaBattle.Services.ShipService
                 ii = cell_y;
             }
         }
-            
+
+        /// <summary>
+        /// Получить длину текущего корабля
+        /// </summary>
+        /// <returns></returns>
         public string GetCurrentShipLenght()
         {
             CurrentShipLenghtDto dto = new CurrentShipLenghtDto();

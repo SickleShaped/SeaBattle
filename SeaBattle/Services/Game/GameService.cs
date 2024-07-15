@@ -23,6 +23,9 @@ namespace SeaBattle.Services.Game
             _cache = cache;
         }
 
+        /// <summary>
+        /// Инициализировать игровые данные
+        /// </summary>
         public void InitGameData()
         {
             var ships = GetShips();
@@ -58,6 +61,10 @@ namespace SeaBattle.Services.Game
             return ships;
         }
 
+        /// <summary>
+        /// Получить всю информацию об игре
+        /// </summary>
+        /// <returns></returns>
         public string GetGameData()
         {
             if(!_cache.TryGetValue("Condition", out _))
@@ -75,6 +82,10 @@ namespace SeaBattle.Services.Game
 
         }
 
+        /// <summary>
+        /// Перезапустить игру
+        /// </summary>
+        /// <returns></returns>
         public string RestartGame()
         {
             InitGameData();
@@ -82,6 +93,10 @@ namespace SeaBattle.Services.Game
             return json;
         }
 
+        /// <summary>
+        /// Начать игру
+        /// </summary>
+        /// <exception cref="Exception"></exception>
         public void StartGame()
         {
             _cache.TryGetValue("Condition", out GameCondition condition);
@@ -111,6 +126,12 @@ namespace SeaBattle.Services.Game
             _cache.Set("Condition", condition);;
         }
 
+        /// <summary>
+        /// Функция проверки на то, выиграла ли одна или другая сторона
+        /// </summary>
+        /// <param name="table"></param>
+        /// <param name="condition"></param>
+        /// <returns></returns>
         public bool CheckVictory(Table table, GameCondition condition)
         {
             int resultScore = 0;
@@ -134,6 +155,11 @@ namespace SeaBattle.Services.Game
             return false;
         }
 
+        /// <summary>
+        /// Функция делания игроком своего хода
+        /// </summary>
+        /// <param name="json"></param>
+        /// <exception cref="Exception"></exception>
         public void MakeTurn(string json)
         {
             _cache.TryGetValue("Condition", out GameCondition condition);

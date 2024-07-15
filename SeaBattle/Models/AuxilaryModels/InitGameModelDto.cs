@@ -2,6 +2,9 @@
 
 namespace SeaBattle.Models.AuxilaryModels
 {
+    /// <summary>
+    /// DTO инициализируемой игры
+    /// </summary>
     public class InitGameModelDto
     {
         public bool IsPlayerTurn { get; set; }

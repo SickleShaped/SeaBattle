@@ -6,6 +6,9 @@ using SeaBattle.Services.UserService;
 
 namespace SeaBattle.Controllers
 {
+    /// <summary>
+    /// Контроллер пользователей
+    /// </summary>
     public class UserController : Controller
     {
         private readonly ILogger<ShipController> _logger;

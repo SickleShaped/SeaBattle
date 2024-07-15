@@ -1,5 +1,8 @@
 ﻿namespace SeaBattle.Models
 {
+    /// <summary>
+    /// Класс, содержащий поля текущего состояния игры
+    /// </summary>
     public class GameCondition
     {
         public int EnemyStore { get; set; }

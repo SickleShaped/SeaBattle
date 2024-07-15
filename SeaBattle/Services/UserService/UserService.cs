@@ -22,7 +22,11 @@ namespace SeaBattle.Services.UserService
             _botService = botService;
         }
 
-
+        /// <summary>
+        /// Функция размещения игроком корабля
+        /// </summary>
+        /// <param name="json"></param>
+        /// <exception cref="Exception"></exception>
         public void PlaceShip(string json)
         {
             PlaceShipDto Cell = JsonConvert.DeserializeObject<PlaceShipDto>(json);

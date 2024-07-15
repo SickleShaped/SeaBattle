@@ -15,6 +15,11 @@ namespace SeaBattle.Services.Bot
             _cache = cache;
         }
 
+        /// <summary>
+        /// Функция создания ботом своей таблицы
+        /// </summary>
+        /// <param name="ships"></param>
+        /// <returns></returns>
         public Table MakeTable(List<Ship> ships)
         {
             Table table = new Table();
@@ -35,6 +40,9 @@ namespace SeaBattle.Services.Bot
             return table;
         }
 
+        /// <summary>
+        /// Функция выстрела бота по полю
+        /// </summary>
         public void Shoot()
         {
             _cache.TryGetValue("PlayerTable", out Table table);
@@ -64,6 +72,12 @@ namespace SeaBattle.Services.Bot
             _cache.Set("PlayerTable", table);
         }
 
+        /// <summary>
+        /// Функкция размещения ботом своих кораблей
+        /// </summary>
+        /// <param name="ship"></param>
+        /// <param name="table"></param>
+        /// <exception cref="Exception"></exception>
         private void BotPlaceShip(Ship ship, Table table)
         {
             int size = 10;

@@ -9,6 +9,9 @@ using SeaBattle.Services.UserService;
 
 namespace SeaBattle.Controllers
 {
+    /// <summary>
+    /// Контроллер кораблей
+    /// </summary>
     public class ShipController : Controller
     {
         private readonly ILogger<ShipController> _logger;
