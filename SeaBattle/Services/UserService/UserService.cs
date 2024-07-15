@@ -33,8 +33,6 @@ namespace SeaBattle.Services.UserService
             _cache.TryGetValue("PlayerTable", out Table PlayerTable);
 
             if (condition.IsGameStarted == true) { throw new Exception("Игра уже началась"); }
-
-            //PlaceShipDto dto = JsonConvert.DeserializeObject<PlaceShipDto>(json);
             int ii;
             int jj;
             _shipService.GetFlipShipCoordinates(Cell.CellId, shipDirection, out ii, out jj);
@@ -89,10 +87,20 @@ namespace SeaBattle.Services.UserService
 
         }
 
-        public void Shoot(Table table, int x, int y)
+        /// <summary>
+        /// Выстрелить в клетку. Возвращает true, если был задет корабль.
+        /// </summary>
+        /// <param name="table"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public bool Shoot(Table table, int x, int y)
         {
             if (table.CellsVisibility[x, y] == TilesVisibility.Checked) throw new Exception("Эта клетка уже прострелена");
             table.CellsVisibility[x, y] = TilesVisibility.Checked;
+            if (table.Cells[x, y] == TilesType.Ship) { return true; }
+            else { return  false; }
         }
     }
 }

@@ -18,7 +18,7 @@ namespace SeaBattle.Services.Bot
         public Table MakeTable(List<Ship> ships)
         {
             Table table = new Table();
-            ///тут логика заполнения кораблями таблицы бота
+            
             foreach (var ship in ships)
             {
                 while (true)
@@ -38,25 +38,33 @@ namespace SeaBattle.Services.Bot
         public void Shoot()
         {
             _cache.TryGetValue("PlayerTable", out Table table);
-            while (true)
+            bool gotShip;
+
+            do
             {
+                gotShip = false;
                 try
                 {
                     Random random = new Random();
                     int x = random.Next(0, 10);
                     int y = random.Next(0, 10);
-                    
+
 
                     if (table.CellsVisibility[x, y] == TilesVisibility.Checked) throw new Exception("Эта клетка уже прострелена");
                     table.CellsVisibility[x, y] = TilesVisibility.Checked;
+                    if (table.Cells[x, y] == TilesType.Ship) {gotShip = true;}
+
                 }
                 catch (Exception ex) { continue; }
-                break;
+
             }
+            while (gotShip);
+
+
             _cache.Set("PlayerTable", table);
         }
 
-        private void BotPlaceShip(Ship ship, Table table) //не знаю, это нарушение DRY или нет?
+        private void BotPlaceShip(Ship ship, Table table)
         {
             int size = 10;
             Random rand = new Random();

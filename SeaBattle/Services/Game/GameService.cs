@@ -149,10 +149,14 @@ namespace SeaBattle.Services.Game
 
             int y = Cell.CellId % 10;
             int x = (Cell.CellId - y) / 10;
+
+            bool gotShip = false;
+
             try
             {
-                _userService.Shoot(EnemyTable, x, y);
+                gotShip = _userService.Shoot(EnemyTable, x, y);
                 _cache.Set("EnemyTable", EnemyTable);
+                if (gotShip) { return; }
             }
             catch (Exception ex) { throw ex; }
             if (CheckVictory(EnemyTable, condition))

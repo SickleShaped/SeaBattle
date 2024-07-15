@@ -6,6 +6,6 @@ namespace SeaBattle.Services.UserService
     {
         public void PlaceShip(string json);
         
-        public void Shoot(Table table, int x, int y);
+        public bool Shoot(Table table, int x, int y);
     }
 }
