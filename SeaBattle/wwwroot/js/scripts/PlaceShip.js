@@ -1,19 +1,32 @@
 ﻿function PlaceShip(event) {
-    const target = event.target;
-    const jsonparams = '{"CellId" : ' + target.id + '}'
-    //console.log("Отредактированный метод" + jsonparams);
 
-    $.ajax({
-        type: "PUT",
-        url: 'https://localhost:7031/User/PlaceShip',
-        dataType: "json",
-        data: jQuery.param({ json: jsonparams }),
-        success: function () {
+    if (sessionStorage.getItem("selectedShip") != null) {
+        const target = event.target;
 
-            window.location.reload();
-        },
-        error: function (error) {
-            console.error('Error:', error.statusText);
+
+        var x = sessionStorage.getItem("textposition");
+        if (x != "Горизонтально") {
+            x = 1
         }
-    });
+        else {
+            x = 0
+        }
+
+        const jsonparams = '{"CellId" : ' + target.id + ', "ShipId" : ' + sessionStorage.getItem("selectedShip") + ', "Direction":' + x + '}'
+
+        $.ajax({
+            type: "Post",
+            url: 'https://localhost:7031/User/PlaceShip',
+            data: jQuery.param({ json: jsonparams }),
+            success: function () {
+
+                window.location.reload();
+            },
+            error: function (error) {
+                console.error('Error:', error.statusText);
+            }
+        });
+    }
+
+    
 }

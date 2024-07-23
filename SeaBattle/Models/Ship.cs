@@ -12,11 +12,15 @@ namespace SeaBattle.Models
         /// </summary>
         public byte Lenght { get; set; }
 
+        /// <summary>
+        /// Поставлен ли корабль
+        /// </summary>
+        public bool IsPlaced { get; set; }
 
-        public Ship(byte Lenght)
-        {
-            this.Lenght = Lenght;
-        }
+        public ShipDirection Direction { get; set; }
+
+
+        public Ship(byte Lenght) => this.Lenght = Lenght;
 
     }
 

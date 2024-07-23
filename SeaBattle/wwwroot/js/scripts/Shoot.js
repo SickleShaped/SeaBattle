@@ -6,7 +6,6 @@
     $.ajax({
         type: "PUT",
         url: 'https://localhost:7031/User/Shoot',
-        dataType: "json",
         data: jQuery.param({ json: jsonparams }),
         success: function () {
             //console.log(result.playerWin);

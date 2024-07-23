@@ -1,7 +1,7 @@
 ﻿function RestartGame() {
     window.sessionStorage.clear();
     $.ajax({
-        type: "Get",
+        type: "Put",
         url: 'https://localhost:7031/Home/RestartGame',
         success: function (result) {
             //console.log(result)

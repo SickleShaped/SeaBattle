@@ -58,5 +58,37 @@ body {
     position: fixed;
     bottom: 100px;
     right: 100px;
-    border: 1px solid black;
+    border: 4px solid black;
+    padding: 20px;
+}
+
+.placeship_number {
+    text-align: left;
+    float: left;
+}
+
+.placeship_pixels {
+    float: right;
+    margin-bottom: 20px;
+}
+
+.placeship_button {
+    float: right;
+    background-color: gray;
+    border-color: black;
+    border-width: 6px;
+    font-size: 18px;
+    width: 50px;
+    height: 40px;
+    margin-right: 15px;
+}
+
+.flipship_button {
+    background-color: antiquewhite;
+    border-color: black;
+    border-width: 6px;
+    font-size: 18px;
+    width: 200px;
+    height: 40px;
+    margin-bottom:20px;
 }

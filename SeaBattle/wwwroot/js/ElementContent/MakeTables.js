@@ -1,4 +1,31 @@
-﻿
+﻿var shipwindow = document.getElementById("shipWindow")
+shipwindow.classList.add('shipplacingwindow');
+
+sessionStorage.setItem("textposition", "Горизонтально");
+
+
+var setAllShips = document.createElement("td")
+setAllShips.textContent = "Расставить все корбали случайно"
+setAllShips.classList.add('flipship_button');
+setAllShips.setAttribute("onclick", "PlayerRandomlyPlaceAllShips()");
+shipwindow.appendChild(setAllShips);
+
+var button = document.createElement("td")
+
+button.textContent = sessionStorage.getItem("textposition")
+button.classList.add('flipship_button');
+button.setAttribute("onclick", "FlipShip(event)");
+shipwindow.appendChild(button);
+
+
+
+
+//positionship
+
+
+
+
+
 
 $.ajax({
     type: "GET",
@@ -6,8 +33,10 @@ $.ajax({
     dataType: "json",
     success: function (result) {
 
-        console.log(result);
-        
+        DrawAllShips(result.Condition.Ships)
+        x = result;
+        console.log(x)
+        PaintShips(result)
         return result
     },
     error: function (error) {
@@ -48,4 +77,8 @@ for (var i = 0; i < 10; i++)
     }
     table1.appendChild(rowrow);
 }
+
+
+var shipdraw = document.createElement("table");
+//positionship.setAttribute("id", "textposition");
 

@@ -1,11 +1,9 @@
 ﻿function StartGame() {
     window.sessionStorage.clear();
     $.ajax({
-        type: "Get",
+        type: "Post",
         url: 'https://localhost:7031/Home/StartGame',
-        success: function (result) {
-            console.log(result)
-
+        success: function () {
             //window.location.reload();
         },
         error: function (error) {

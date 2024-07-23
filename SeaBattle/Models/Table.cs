@@ -1,4 +1,8 @@
-﻿using SeaBattle.Models.Enums;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using SeaBattle.Consts;
+using SeaBattle.Models.AuxilaryModels;
+using SeaBattle.Models.Enums;
+using System.Drawing;
 
 namespace SeaBattle.Models
 {
@@ -7,31 +11,19 @@ namespace SeaBattle.Models
     /// </summary>
     public class Table
     {
-        /// <summary>
-        /// Значение полей таблицы
-        /// </summary>
         public TilesType[,] Cells { get; set; }
-
         public TilesVisibility[,] CellsVisibility { get; set; }
+        public byte CurrentScore {  get; set; } 
 
-        /// <summary>
-        /// Принадлежит ли поле игроку. True - если да, False - если принадлежит боту/сопернику
-        /// </summary>
-        public bool BelongsPlayer { get; set; }
+
         public Table()
         {
-            Cells = new TilesType[10, 10];
-            CellsVisibility = new TilesVisibility[10, 10];
-            for (int i = 0; i < 10; i++)
-            {
-                for (int j = 0; j < 10; j++)
-                {
-                    Cells[i, j] = TilesType.Free;
-                    CellsVisibility[i, j] = TilesVisibility.Unchecked;
-                }
-            }
+            Cells = new TilesType[Constants.TableWidth, Constants.TableWidth];
+            CellsVisibility = new TilesVisibility[Constants.TableWidth, Constants.TableWidth];
         }
 
+
+        
 
 
     }

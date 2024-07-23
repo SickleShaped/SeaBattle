@@ -8,5 +8,7 @@ namespace SeaBattle.Models.AuxilaryModels
     public class PlaceShipDto
     {
         public int CellId { get; set; }
+        public int ShipId { get; set; }
+        public ShipDirection Direction { get; set; }
     }
 }

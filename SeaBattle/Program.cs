@@ -1,38 +1,37 @@
+using Microsoft.AspNetCore.Http.HttpResults;
 using SeaBattle.Extensions;
-using SeaBattle.Services;
 
-namespace SeaBattle
+namespace SeaBattle;
+
+public class Program
 {
-    public class Program
+    public static void Main()
     {
-        public static void Main(string[] args)
+        var builder = WebApplication.CreateBuilder();
+
+
+        builder.Services.AddControllersWithViews();
+        var connection = builder.Configuration.GetConnectionString("Default");
+        builder.Services.AddDependencyInjection(builder.Configuration);
+        var app = builder.Build();
+
+        if (!app.Environment.IsDevelopment())
         {
-            var builder = WebApplication.CreateBuilder(args);
-
-            builder.Services.AddControllersWithViews();
-            builder.Services.AddMemoryCache();
-            builder.Services.AddDependencyInjection(); //Нужно ли тут DI?
- 
-
-            var app = builder.Build();
-
-            if (!app.Environment.IsDevelopment())
-            {
-                app.UseHsts();
-            }
-
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-
-            app.UseRouting();
-
-            app.UseAuthorization();
-
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
-
-            app.Run();
+            app.UseHsts();
         }
+
+
+        app.UseMiddleware<MiddlewareBuilderService>();
+        app.UseHttpsRedirection();
+        app.UseStaticFiles();
+
+
+        app.UseRouting();
+
+        app.MapControllerRoute(
+            name: "default",
+            pattern: "{controller=Home}/{action=Index}/{id?}");
+
+        app.Run();
     }
 }
