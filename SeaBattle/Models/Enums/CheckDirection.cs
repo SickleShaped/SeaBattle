@@ -1,10 +1,8 @@
-﻿namespace SeaBattle.Models.Enums
+﻿namespace SeaBattle.Models.Enums;
+public enum CheckDirection
 {
-    public enum CheckDirection
-    {
-        Up,
-        Down,
-        Left,
-        Right
-    }
+    Up,
+    Down,
+    Left,
+    Right
 }

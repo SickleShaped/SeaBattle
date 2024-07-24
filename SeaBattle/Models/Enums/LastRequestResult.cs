@@ -1,12 +1,10 @@
-﻿namespace SeaBattle.Models.Enums
+﻿namespace SeaBattle.Models.Enums;
+public enum LastRequestResult
 {
-    public enum LastRequestResult
-    {
-        Ok,
-        GameAlreadyStarted,
-        GameIsntStarted,
-        ShipsArentPlaced,
-        WrongCell,
-        SamePointShooted,
-    }
+    Ok,
+    GameAlreadyStarted,
+    GameIsntStarted,
+    ShipsArentPlaced,
+    WrongCell,
+    SamePointShooted,
 }

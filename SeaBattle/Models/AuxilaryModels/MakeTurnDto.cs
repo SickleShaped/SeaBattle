@@ -1,7 +1,6 @@
-﻿namespace SeaBattle.Models.AuxilaryModels
+﻿namespace SeaBattle.Models.AuxilaryModels;
+
+public class MakeTurnDto
 {
-    public class MakeTurnDto
-    {
-        public int CellId { get; set; }
-    }
+    public int CellId { get; set; }
 }

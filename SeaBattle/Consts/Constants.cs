@@ -1,7 +1,6 @@
-﻿namespace SeaBattle.Consts
+﻿namespace SeaBattle.Consts;
+
+public static class Constants
 {
-    public static class Constants
-    {
-        public const int TableWidth = 10;
-    }
+    public const int TableWidth = 10;
 }

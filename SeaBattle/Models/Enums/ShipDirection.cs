@@ -1,8 +1,6 @@
-﻿namespace SeaBattle.Models.Enums
+﻿namespace SeaBattle.Models.Enums;
+public enum ShipDirection
 {
-    public enum ShipDirection
-    {
-        Horisontal,
-        Vertical
-    }
+    Horisontal,
+    Vertical
 }
