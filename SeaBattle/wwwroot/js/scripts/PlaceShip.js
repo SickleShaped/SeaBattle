@@ -18,9 +18,12 @@
             type: "Post",
             url: 'https://localhost:7031/User/PlaceShip',
             data: jQuery.param({ json: jsonparams }),
-            success: function () {
+            success: function (result) {
 
-                window.location.reload();
+                DrawAllShips(result)
+                PaintShips(result)
+                WriteErrors(result)
+                return result
             },
             error: function (error) {
                 console.error('Error:', error.statusText);

@@ -7,12 +7,7 @@ public class Coordinate
     public int X {  get; set; }
     public int Y {  get; set; }
 
-    public Coordinate(int x, int y)
-    {
-        X = x;
-        Y = y;
-    }
-
+    public Coordinate(){}
 
     public Coordinate(ShipDirection direction, int x, int y)
     {

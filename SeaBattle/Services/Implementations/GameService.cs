@@ -28,22 +28,22 @@ public class GameService : IGameService
     }
 
 
-    public async Task<string> GetGame(string login)
+    public async Task<Game> GetGame(string login)
     {
         var response = await db.StringGetAsync($"Game_{login}");
         if (response == RedisValue.Null)
-            return JsonConvert.SerializeObject(await InitGameData(login));
+            return await InitGameData(login);
         Game game = JsonConvert.DeserializeObject<Game>(response);
-        return response;
-    }
-
-    public async Task<string> RestartGame(string login)
-    {
-        var game = JsonConvert.SerializeObject(await InitGameData(login));
         return game;
     }
 
-    public async Task StartGame(string login)
+    public async Task<Game> RestartGame(string login)
+    {
+        var game = await InitGameData(login);
+        return game;
+    }
+
+    public async Task<Game> StartGame(string login)
     {
         var response = await db.StringGetAsync($"Game_{login}");
         var game = JsonConvert.DeserializeObject<Game>(response);
@@ -51,64 +51,37 @@ public class GameService : IGameService
         foreach (var ship in game.Condition.Ships)
         {
             if (ship.IsPlaced == false)
-                throw new Exception("Не все норабли поставлены!");
+            {
+                game.Condition.LastRequestResult = LastRequestResult.ShipsArentPlaced;
+                return game;
+            }   
         }
         game.Condition.GameState = GameState.Game;
+        game.Condition.LastRequestResult = LastRequestResult.Ok;
         await db.StringSetAsync($"Game_{login}", JsonConvert.SerializeObject(game));
+        return game;
 
     }
 
 
-    public async Task MakeTurn(string login, MakeTurnDto dto)
+    public async Task<Game> MakeTurn(string login, MakeTurnDto dto)
     {
         Game game = JsonConvert.DeserializeObject<Game>(await db.StringGetAsync($"Game_{login}"));
         if (game.Condition.GameState != GameState.Game)
-            throw new Exception("Игра не началась или уже закончилась!");
-        int cellId = dto.CellId - 100 ;
+        {
+            game.Condition.LastRequestResult = LastRequestResult.ShipsArentPlaced;
+            return game;
+        }
+        int cellId = Math.Abs(dto.CellId)-1;
         int y = cellId % 10;
         int x = (cellId-y) / 10;
+        Coordinate coordinate = new Coordinate {X = x, Y = y };
 
-        Coordinate coordinate = new Coordinate(x, y);
-        #region UserTurn
-            ShootResult shootResult = _userService.Shoot(game.EnemyTable, coordinate);
-            if (shootResult == ShootResult.SamePointShooted)
-            {
-                return;
-            }
-            if (_tableService.CheckVictory(game.EnemyTable))
-            {
-                game.Condition.GameState = GameState.PlayerWin;
-            await db.StringSetAsync($"Game_{login}", JsonConvert.SerializeObject(game));
-            return;
-            }
-            if (shootResult == ShootResult.Hit)
-            {
-                await db.StringSetAsync($"Game_{login}", JsonConvert.SerializeObject(game));
-                return;
-            }
-        #endregion
-        #region EnemyTurn
-            bool BotHitOrRepeated = true;
-            while (BotHitOrRepeated)
-            {
-                Random random = new Random();
-                Coordinate coordinateBotShoot = new Coordinate(random.Next(0, Constants.TableWidth), random.Next(0, Constants.TableWidth));
-                if (_botService.Shoot(game.PlayerTable, coordinateBotShoot) == ShootResult.Miss)
-                    BotHitOrRepeated = false;
-                else
-                {
-                    if (_tableService.CheckVictory(game.PlayerTable))
-                    {
-                        game.Condition.GameState = GameState.EnemyWin;
-                        return;
-                    }
-
-                }
-            }
-        #endregion
-
-
-        await db.StringSetAsync($"Game_{login}", JsonConvert.SerializeObject(game));
+        if (await PlayerTurn(login, game, coordinate))
+        {
+            await EnemyTurn(login, game);
+        }
+        return game;
     }
 
     private async Task<Game> InitGameData(string login)
@@ -133,16 +106,127 @@ public class GameService : IGameService
         await db.StringSetAsync($"Game_{login}", JsonConvert.SerializeObject(game));
         return game;
     }
-    public async Task AutoMakeTablePlayer(string login)
+    public async Task<Game> AutoMakeTablePlayer(string login)
     {
         var game = JsonConvert.DeserializeObject<Game>(await db.StringGetAsync($"Game_{login}"));
         if (game.Condition.GameState != GameState.PlacingShips)
-            throw new Exception("Нельзя переставлять корабли во время игры!");
+        {
+            game.Condition.LastRequestResult = LastRequestResult.ShipsArentPlaced;
+            return game;
+        }
         game.PlayerTable = _userService.AutoMakeTable(game.Condition.Ships);
         foreach(var ship in game.Condition.Ships)
         {
             ship.IsPlaced = true;
         }
+        game.Condition.LastRequestResult = LastRequestResult.Ok;
+        
+        await db.StringSetAsync($"Game_{login}", JsonConvert.SerializeObject(game));
+        return game;
+    }
+
+    private async Task<bool> PlayerTurn(string login, Game game, Coordinate coordinate)
+    {
+        ShootResult shootResult = _userService.Shoot(game.EnemyTable, coordinate);
+        switch (shootResult)
+        {
+            case ShootResult.Hit:
+                if (_tableService.CheckVictory(game.EnemyTable))
+                {
+                    game.Condition.GameState = GameState.PlayerWin;
+                }
+                game.Condition.LastRequestResult = LastRequestResult.Ok;
+                await db.StringSetAsync($"Game_{login}", JsonConvert.SerializeObject(game));
+                return false;
+
+            case ShootResult.SamePointShooted:
+                game.Condition.LastRequestResult = LastRequestResult.SamePointShooted;
+                return false;
+
+            default:
+                game.Condition.LastRequestResult = LastRequestResult.Ok;
+                return true;
+        }
+    }
+
+    private async Task EnemyTurn(string login, Game game)
+    {
+        bool BotNotMiss = true;
+        Coordinate lastBotShoot = new Coordinate();
+        if (game.Condition.lastBotShoot != null) { lastBotShoot = game.Condition.lastBotShoot; }
+        Coordinate coordinateBotShoot = new Coordinate();
+        while (BotNotMiss)
+        {
+            Random random = new Random();
+
+            if (game.PlayerTable.Cells[lastBotShoot.X, lastBotShoot.Y] == TilesType.Ship &&
+                ((lastBotShoot.X - 1 >= 0 && game.PlayerTable.CellsVisibility[lastBotShoot.X - 1, lastBotShoot.Y] == TilesVisibility.Unchecked)
+                || (lastBotShoot.X < Constants.TableWidth -1 && game.PlayerTable.CellsVisibility[lastBotShoot.X + 1, lastBotShoot.Y] == TilesVisibility.Unchecked)
+                || (lastBotShoot.Y - 1 >= 0 && game.PlayerTable.CellsVisibility[lastBotShoot.X, lastBotShoot.Y-1] == TilesVisibility.Unchecked)
+                || (lastBotShoot.Y < Constants.TableWidth -1 && game.PlayerTable.CellsVisibility[lastBotShoot.X, lastBotShoot.Y+1] == TilesVisibility.Unchecked)
+
+                ))
+            {
+                switch (random.Next(1, 5))
+                {
+                    case 1:
+                        if(lastBotShoot.X < Constants.TableWidth-1)
+                        {
+                            coordinateBotShoot.X = lastBotShoot.X + 1;
+                            coordinateBotShoot.Y = lastBotShoot.Y;
+                        }
+                        break;
+
+                    case 2:
+                        if(lastBotShoot.X - 1 >= 0)
+                        {
+                            coordinateBotShoot.X = lastBotShoot.X - 1;
+                            coordinateBotShoot.Y = lastBotShoot.Y;
+                        } 
+                        break;
+
+                    case 3:
+                        if(lastBotShoot.Y < Constants.TableWidth-1)
+                        {
+                            coordinateBotShoot.X = lastBotShoot.X;
+                            coordinateBotShoot.Y = lastBotShoot.Y + 1;
+                        }
+                        break;
+
+                    case 4:
+                        if(lastBotShoot.Y - 1 >= 0)
+                        {
+                            coordinateBotShoot.X = lastBotShoot.X;
+                            coordinateBotShoot.Y = lastBotShoot.Y - 1;
+                        }
+                        break;
+                }
+            }
+            else
+            {
+                coordinateBotShoot.X = random.Next(0, Constants.TableWidth);
+                coordinateBotShoot.Y = random.Next(0, Constants.TableWidth);
+            }
+            ShootResult result = _botService.Shoot(game.PlayerTable, coordinateBotShoot);
+
+            switch (result)
+            {
+                case ShootResult.Hit:
+                    lastBotShoot.X = coordinateBotShoot.X;
+                    lastBotShoot.Y = coordinateBotShoot.Y;
+                    if (_tableService.CheckVictory(game.PlayerTable))
+                    {
+                        game.Condition.GameState = GameState.EnemyWin;
+                        return;
+                    }
+                    break;
+
+                case ShootResult.Miss:
+                    BotNotMiss = false;
+                    break;
+            }
+        }
+        game.Condition.lastBotShoot = lastBotShoot;
         await db.StringSetAsync($"Game_{login}", JsonConvert.SerializeObject(game));
     }
     

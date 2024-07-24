@@ -19,12 +19,15 @@ public class UserService : Gamer
         _db = db;
     }
 
-    public async Task PlaceShip(string login, PlaceShipDto dto)
+    public async Task<Game> PlaceShip(string login, PlaceShipDto dto)
     {
         Game game = JsonConvert.DeserializeObject<Game>(await _db.StringGetAsync($"Game_{login}"));
 
         if (game.Condition.GameState != GameState.PlacingShips)
-            throw new Exception("Игра уже началась");
+        {
+            game.Condition.LastRequestResult = LastRequestResult.GameAlreadyStarted;
+            return game;
+        }
 
 
         int cell_x = dto.CellId % 10;
@@ -47,9 +50,11 @@ public class UserService : Gamer
             }
             game.Condition.Ships[dto.ShipId].IsPlaced = true;
             await _db.StringSetAsync($"Game_{login}", JsonConvert.SerializeObject(game));
-            return;
+            game.Condition.LastRequestResult = LastRequestResult.Ok;
+            return game;
         }
-        throw new Exception("Необходимая область уже занята другим кораблем или корабль за пределами массива");
+        game.Condition.LastRequestResult = LastRequestResult.WrongCell;
+        return game;
 
     }
 

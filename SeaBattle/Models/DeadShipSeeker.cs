@@ -23,19 +23,5 @@ namespace SeaBattle.Models
             ShipIsDead = true;
         }
 
-        public void CheckAllAroundShip(Table table)
-        {
-            for (int i = LowerX - 1; i <= UpperX + 1; i++)
-            {
-                if(i>=0 && i<Constants.TableWidth)
-                {
-                    for (int j = LowerY - 1; j <= UpperY+1; j++)
-                    {
-                        if (j >= 0 && j < Constants.TableWidth)
-                            table.CellsVisibility[i, j] = TilesVisibility.Checked;
-                    }
-                } 
-            }
-        }
     }
 }

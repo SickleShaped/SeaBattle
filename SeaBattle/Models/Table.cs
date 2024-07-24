@@ -21,10 +21,5 @@ namespace SeaBattle.Models
             Cells = new TilesType[Constants.TableWidth, Constants.TableWidth];
             CellsVisibility = new TilesVisibility[Constants.TableWidth, Constants.TableWidth];
         }
-
-
-        
-
-
     }
 }

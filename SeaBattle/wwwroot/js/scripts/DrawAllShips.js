@@ -1,9 +1,41 @@
-﻿function DrawAllShips(ships) {
+﻿function DrawAllShips(result) {
 
-    console.log(ships);
+    let ships = 0;
+    
+    if (typeof result === 'object') {
+        const x = result;
+        ships = x.Condition.Ships
+    }
+    else {
+        const x = JSON.parse(result);
+        ships = x.Condition.Ships
+    }
 
     var shipwindow = document.getElementById("shipWindow")
+    shipwindow.classList.add('shipplacingwindow');
+
+    sessionStorage.setItem("textposition", "Горизонтально");
+
+    
+    while (shipwindow.firstChild) {
+        shipwindow.removeChild(shipwindow.lastChild);
+    }
     shipwindow.style.backgroundColor = "white";
+
+    var setAllShips = document.createElement("td")
+    setAllShips.textContent = "Расставить все корбали случайно"
+    setAllShips.classList.add('flipship_button');
+    setAllShips.setAttribute("onclick", "PlayerRandomlyPlaceAllShips()");
+    shipwindow.appendChild(setAllShips);
+
+    var button = document.createElement("td")
+
+    button.textContent = sessionStorage.getItem("textposition")
+    button.classList.add('flipship_button');
+    button.setAttribute("onclick", "FlipShip(event)");
+    shipwindow.appendChild(button);
+
+    
 
     //ships.forEach((ship) => { console.log("корабль") })
 

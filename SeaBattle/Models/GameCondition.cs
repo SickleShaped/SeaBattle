@@ -1,4 +1,5 @@
-﻿using SeaBattle.Models.Enums;
+﻿using SeaBattle.Models.AuxilaryModels;
+using SeaBattle.Models.Enums;
 using SeaBattle.Services.Implementations;
 
 namespace SeaBattle.Models;
@@ -8,9 +9,9 @@ namespace SeaBattle.Models;
 public class GameCondition
 {
     public GameState GameState { get; set; }
+    public LastRequestResult LastRequestResult { get; set; }
     public List<Ship> Ships { get; set; }
-    public GameCondition(List<Ship> ships)
-    {
-        Ships = ships;
-    }
+    public Coordinate lastBotShoot { get; set; }
+    public GameCondition(List<Ship> ships) => Ships = ships;
+    
 }

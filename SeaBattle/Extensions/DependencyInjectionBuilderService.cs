@@ -18,11 +18,11 @@ public static class DependencyInjectionBuilderService
     /// <returns></returns>
     public static IServiceCollection AddDependencyInjection(this IServiceCollection services, Microsoft.Extensions.Configuration.ConfigurationManager builder )
     {
-        services.AddScoped<IGameService, GameService>();
-        services.AddScoped<BotService>();
-        services.AddScoped<UserService>();
+        services.AddSingleton<IGameService, GameService>();
+        services.AddSingleton<BotService>();
+        services.AddSingleton<UserService>();
         services.AddSingleton<ITableService, TableService>();
-        services.AddScoped<IDatabase>(cfg =>
+        services.AddSingleton<IDatabase>(cfg =>
         {
             IConnectionMultiplexer multiplexer = ConnectionMultiplexer.Connect($"{builder.GetConnectionString("Default")}");
             return multiplexer.GetDatabase();

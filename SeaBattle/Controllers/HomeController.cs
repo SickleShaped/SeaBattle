@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using SeaBattle.Models.AuxilaryModels;
 using SeaBattle.Services.Implementations;
 using SeaBattle.Services.Interfaces;
 using System.Diagnostics;
@@ -28,24 +30,16 @@ public class HomeController : Controller
     [HttpGet]
     public async Task<IActionResult> GetGame()
     {
-        
-        
         string login = HttpContext.Request.Headers.UserAgent.ToString();
-        var data = await _gameService.GetGame(login);
-        
-
+        var data = JsonConvert.SerializeObject(await _gameService.GetGame(login));
         return Ok(data);
     }
 
     [HttpPut]
     public async Task<IActionResult> RestartGame()
     {
-        
-
         string login = HttpContext.Request.Headers.UserAgent.ToString();
-        var data = await _gameService.RestartGame(login);
-
-        
+        var data = JsonConvert.SerializeObject(await _gameService.RestartGame(login));
         return Ok(data);
     }
 
@@ -53,8 +47,8 @@ public class HomeController : Controller
     public async Task<IActionResult> StartGame()
     {
         string login = HttpContext.Request.Headers.UserAgent.ToString();
-        await _gameService.StartGame(login);
-        return Ok();
+        var data = JsonConvert.SerializeObject(await _gameService.StartGame(login));
+        return Ok(data);
     }
 
     

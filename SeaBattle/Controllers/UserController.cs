@@ -31,16 +31,16 @@ public class UserController : Controller
     public async Task<IActionResult> PlaceShip(string json)
     {
         string login = HttpContext.Request.Headers.UserAgent.ToString();
-        await _userService.PlaceShip(login, JsonConvert.DeserializeObject<PlaceShipDto>(json));
-        return Ok();
+        var data = JsonConvert.SerializeObject(await _userService.PlaceShip(login, JsonConvert.DeserializeObject<PlaceShipDto>(json)));
+        return Ok(data);
     }
 
     [HttpPost]
     public async Task<IActionResult> PlaceAllShip(string json)
     {
         string login = HttpContext.Request.Headers.UserAgent.ToString();
-        await _gameService.AutoMakeTablePlayer(login);
-        return Ok();
+        var data = JsonConvert.SerializeObject(await _gameService.AutoMakeTablePlayer(login));
+        return Ok(data);
     }
     
     /// <summary>
@@ -53,7 +53,7 @@ public class UserController : Controller
     public async Task<IActionResult> Shoot(string json)
     {
         string login = HttpContext.Request.Headers.UserAgent.ToString();
-        await _gameService.MakeTurn(login, JsonConvert.DeserializeObject<MakeTurnDto>(json));
-        return Ok();
+        var data = JsonConvert.SerializeObject(await _gameService.MakeTurn(login, JsonConvert.DeserializeObject<MakeTurnDto>(json)));
+        return Ok(data);
     }
 }

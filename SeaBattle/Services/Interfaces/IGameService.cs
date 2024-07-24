@@ -6,10 +6,10 @@ namespace SeaBattle.Services.Interfaces;
 
 public interface IGameService
 {
-    Task StartGame(string login);
-    Task<string> GetGame(string login);
-    Task<string> RestartGame(string login);
-    Task MakeTurn(string login, MakeTurnDto dto);
-    Task AutoMakeTablePlayer(string login);
+    Task<Game> StartGame(string login);
+    Task<Game> GetGame(string login);
+    Task<Game> RestartGame(string login);
+    Task<Game> MakeTurn(string login, MakeTurnDto dto);
+    Task<Game> AutoMakeTablePlayer(string login);
 
 }
