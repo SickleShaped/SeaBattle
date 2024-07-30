@@ -16,16 +16,19 @@ public static class DependencyInjectionBuilderService
     /// </summary>
     /// <param name="services"></param>
     /// <returns></returns>
-    public static IServiceCollection AddDependencyInjection(this IServiceCollection services, Microsoft.Extensions.Configuration.ConfigurationManager builder )
+    public static IServiceCollection AddDependencyInjection(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddSingleton<IGameService, GameService>();
-        services.AddSingleton<BotService>();
-        services.AddSingleton<UserService>();
-        services.AddSingleton<ITableService, TableService>();
-        services.AddSingleton<IDatabase>(cfg =>
+        services.AddScoped<IGameService, GameService>();
+        services.AddScoped<IGamer, BotService>();
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<ITableService, TableService>();
+        services.AddScoped<IRedisDbService, RedisDbService>();
+        services.AddScoped<IRabbitMqService, RabbitMqService>();
+
+        services.AddStackExchangeRedisCache(opt =>
         {
-            IConnectionMultiplexer multiplexer = ConnectionMultiplexer.Connect($"{builder.GetConnectionString("Default")}");
-            return multiplexer.GetDatabase();
+            opt.Configuration = configuration.GetConnectionString("Default");
+            opt.InstanceName = "Game";
         });
 
         return services;

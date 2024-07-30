@@ -6,22 +6,18 @@ using StackExchange.Redis;
 
 namespace SeaBattle.Services.Implementations;
 
-public class UserService : Gamer
+public class UserService : Gamer, IUserService
 {
-    private readonly BotService _botService;
-    private readonly ITableService _tableService;
-    private readonly IDatabase _db;
+    private readonly IRedisDbService _db;
 
-    public UserService(BotService botService, ITableService tableService, IDatabase db) : base(tableService)
-    {
-        _botService = botService;
-        _tableService = tableService;
+    public UserService(ITableService tableService, IRedisDbService db) : base(tableService) =>
+    
         _db = db;
-    }
+    
 
     public async Task<Game> PlaceShip(string login, PlaceShipDto dto)
     {
-        Game game = JsonConvert.DeserializeObject<Game>(await _db.StringGetAsync($"Game_{login}"));
+        Game game = await _db.Get(login);
 
         if (game.Condition.GameState != GameState.PlacingShips)
         {
@@ -38,8 +34,9 @@ public class UserService : Gamer
 
 
         var ship = game.Condition.Ships[dto.ShipId];
+        ship.Direction = dto.Direction;
 
-        if (_tableService.CanPlaceShip(game.PlayerTable, ship.Lenght, dto.Direction, coordinate))
+        if (_tableService.CanPlaceShip(game.PlayerTable, ship, coordinate))
         {
             for (int i = coordinate.X; i < coordinate.X + ship.Lenght; i++)
             {
@@ -49,7 +46,7 @@ public class UserService : Gamer
                     game.PlayerTable.Cells[coordinate.Y, i] = TilesType.Ship;
             }
             game.Condition.Ships[dto.ShipId].IsPlaced = true;
-            await _db.StringSetAsync($"Game_{login}", JsonConvert.SerializeObject(game));
+            await _db.Set(login, game);
             game.Condition.LastRequestResult = LastRequestResult.Ok;
             return game;
         }

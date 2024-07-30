@@ -9,6 +9,5 @@ public interface ITableService
 {
     bool CheckVictory(Table table);
     bool PlaceShip(Table table, Coordinate coordinate, Ship ship );
-    bool CanPlaceShip(Table table, int shipLenght, ShipDirection direction, Coordinate coordinate);
-
+    bool CanPlaceShip(Table table, Ship ship, Coordinate coordinate);
 }

@@ -13,9 +13,9 @@ namespace SeaBattle.Controllers;
 public class UserController : Controller
 {
     private readonly IGameService _gameService;
-    private readonly UserService _userService;
+    private readonly IUserService _userService;
 
-    public UserController(IGameService gameService, UserService userService)
+    public UserController(IGameService gameService, IUserService userService)
     {
         _gameService = gameService;
         _userService = userService;

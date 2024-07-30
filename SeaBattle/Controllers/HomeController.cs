@@ -13,9 +13,9 @@ namespace SeaBattle.Controllers;
 public class HomeController : Controller
 {
     private readonly IGameService _gameService;
-    private readonly BotService _botService;
+    private readonly IGamer _botService;
 
-    public HomeController(IGameService gameService, BotService botService)
+    public HomeController(IGameService gameService, IGamer botService)
     {
         _gameService = gameService;
         _botService = botService;

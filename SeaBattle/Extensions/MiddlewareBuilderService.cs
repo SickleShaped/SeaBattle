@@ -30,14 +30,6 @@ public class MiddlewareBuilderService
     private async Task HandleException(HttpContext context, Exception ex)
     {
         _logger.LogError(ex, "An unexpected error occurred.");
-        var code = HttpStatusCode.InternalServerError;
-        var result = string.Empty;
-        switch (ex)
-        {
-            default:
-                code = HttpStatusCode.BadRequest;
-                break;
-        }
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
     }

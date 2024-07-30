@@ -1,8 +1,6 @@
-﻿using SeaBattle.Consts;
-using SeaBattle.Models;
+﻿using SeaBattle.Models;
 using SeaBattle.Models.AuxilaryModels;
 using SeaBattle.Models.Enums;
-using SeaBattle.Services.Implementations;
 
 namespace SeaBattle.Services.Interfaces;
 

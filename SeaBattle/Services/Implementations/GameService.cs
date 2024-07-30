@@ -14,39 +14,36 @@ namespace SeaBattle.Services.Implementations;
 
 public class GameService : IGameService
 {
-    private readonly UserService _userService;
-    private readonly BotService _botService;
+    private readonly IUserService _userService;
+    private readonly IGamer _botService;
     private readonly ITableService _tableService;
-    private readonly IDatabase db;
+    private readonly IRedisDbService db;
+    private readonly IRabbitMqService _rabbit;
 
-    public GameService(BotService botService, UserService userService, IDatabase db, ITableService tableService)
+    public GameService(IGamer botService, IUserService userService, IRedisDbService db, ITableService tableService, IRabbitMqService rabbit)
     {
         this.db = db;
         _botService = botService;
         _userService = userService;
         _tableService = tableService;
+        _rabbit = rabbit;
     }
 
 
     public async Task<Game> GetGame(string login)
     {
-        var response = await db.StringGetAsync($"Game_{login}");
-        if (response == RedisValue.Null)
-            return await InitGameData(login);
-        Game game = JsonConvert.DeserializeObject<Game>(response);
-        return game;
+        return await db.Get(login);
     }
 
     public async Task<Game> RestartGame(string login)
     {
-        var game = await InitGameData(login);
-        return game;
+        await db.Delete(login);
+        return await db.Get(login);
     }
 
     public async Task<Game> StartGame(string login)
     {
-        var response = await db.StringGetAsync($"Game_{login}");
-        var game = JsonConvert.DeserializeObject<Game>(response);
+        var game = await db.Get(login);
         bool allShipsPlaced = true;
         foreach (var ship in game.Condition.Ships)
         {
@@ -58,7 +55,7 @@ public class GameService : IGameService
         }
         game.Condition.GameState = GameState.Game;
         game.Condition.LastRequestResult = LastRequestResult.Ok;
-        await db.StringSetAsync($"Game_{login}", JsonConvert.SerializeObject(game));
+        await db.Set(login, game);
         return game;
 
     }
@@ -66,7 +63,7 @@ public class GameService : IGameService
 
     public async Task<Game> MakeTurn(string login, MakeTurnDto dto)
     {
-        Game game = JsonConvert.DeserializeObject<Game>(await db.StringGetAsync($"Game_{login}"));
+        Game game = (await db.Get(login));
         if (game.Condition.GameState != GameState.Game)
         {
             game.Condition.LastRequestResult = LastRequestResult.ShipsArentPlaced;
@@ -84,31 +81,10 @@ public class GameService : IGameService
         return game;
     }
 
-    private async Task<Game> InitGameData(string login)
-    {
-
-        var ships = new List<Ship>
-        {
-            new Ship(4), new Ship(3), new Ship(3), new Ship(2), new Ship(2),
-            new Ship(2), new Ship(1), new Ship(1), new Ship(1), new Ship(1)
-        };
-
-        Game game = new Game()
-        {
-            PlayerTable = new Table(),
-            EnemyTable = _botService.AutoMakeTable(ships),
-            Condition = new GameCondition(ships)
-            {
-                GameState = GameState.PlacingShips,
-            }
-        };
-
-        await db.StringSetAsync($"Game_{login}", JsonConvert.SerializeObject(game));
-        return game;
-    }
+    
     public async Task<Game> AutoMakeTablePlayer(string login)
     {
-        var game = JsonConvert.DeserializeObject<Game>(await db.StringGetAsync($"Game_{login}"));
+        var game = await db.Get(login);
         if (game.Condition.GameState != GameState.PlacingShips)
         {
             game.Condition.LastRequestResult = LastRequestResult.ShipsArentPlaced;
@@ -121,12 +97,17 @@ public class GameService : IGameService
         }
         game.Condition.LastRequestResult = LastRequestResult.Ok;
         
-        await db.StringSetAsync($"Game_{login}", JsonConvert.SerializeObject(game));
+        await db.Set(login, game);
         return game;
     }
 
     private async Task<bool> PlayerTurn(string login, Game game, Coordinate coordinate)
     {
+        RabbitMessage rabbitMessage = new RabbitMessage();
+        rabbitMessage.Login = login;
+        rabbitMessage.Player = PlayerEnum.Player;
+        rabbitMessage.Coordinate = coordinate;
+
         ShootResult shootResult = _userService.Shoot(game.EnemyTable, coordinate);
         switch (shootResult)
         {
@@ -136,7 +117,10 @@ public class GameService : IGameService
                     game.Condition.GameState = GameState.PlayerWin;
                 }
                 game.Condition.LastRequestResult = LastRequestResult.Ok;
-                await db.StringSetAsync($"Game_{login}", JsonConvert.SerializeObject(game));
+                await db.Set(login, game);
+                
+        
+                _rabbit.SendMessage(rabbitMessage);
                 return false;
 
             case ShootResult.SamePointShooted:
@@ -145,6 +129,8 @@ public class GameService : IGameService
 
             default:
                 game.Condition.LastRequestResult = LastRequestResult.Ok;
+                _rabbit.SendMessage(rabbitMessage);
+
                 return true;
         }
     }
@@ -157,15 +143,15 @@ public class GameService : IGameService
         Coordinate coordinateBotShoot = new Coordinate();
         while (BotNotMiss)
         {
+            
+
             Random random = new Random();
 
             if (game.PlayerTable.Cells[lastBotShoot.X, lastBotShoot.Y] == TilesType.Ship &&
                 ((lastBotShoot.X - 1 >= 0 && game.PlayerTable.CellsVisibility[lastBotShoot.X - 1, lastBotShoot.Y] == TilesVisibility.Unchecked)
                 || (lastBotShoot.X < Constants.TableWidth -1 && game.PlayerTable.CellsVisibility[lastBotShoot.X + 1, lastBotShoot.Y] == TilesVisibility.Unchecked)
                 || (lastBotShoot.Y - 1 >= 0 && game.PlayerTable.CellsVisibility[lastBotShoot.X, lastBotShoot.Y-1] == TilesVisibility.Unchecked)
-                || (lastBotShoot.Y < Constants.TableWidth -1 && game.PlayerTable.CellsVisibility[lastBotShoot.X, lastBotShoot.Y+1] == TilesVisibility.Unchecked)
-
-                ))
+                || (lastBotShoot.Y < Constants.TableWidth -1 && game.PlayerTable.CellsVisibility[lastBotShoot.X, lastBotShoot.Y+1] == TilesVisibility.Unchecked)))
             {
                 switch (random.Next(1, 5))
                 {
@@ -207,6 +193,12 @@ public class GameService : IGameService
                 coordinateBotShoot.X = random.Next(0, Constants.TableWidth);
                 coordinateBotShoot.Y = random.Next(0, Constants.TableWidth);
             }
+
+            RabbitMessage rabbitMessage = new RabbitMessage();
+            rabbitMessage.Login = login;
+            rabbitMessage.Player = PlayerEnum.Bot;
+            rabbitMessage.Coordinate = coordinateBotShoot;
+
             ShootResult result = _botService.Shoot(game.PlayerTable, coordinateBotShoot);
 
             switch (result)
@@ -219,15 +211,17 @@ public class GameService : IGameService
                         game.Condition.GameState = GameState.EnemyWin;
                         return;
                     }
+                    _rabbit.SendMessage(rabbitMessage);
                     break;
 
                 case ShootResult.Miss:
                     BotNotMiss = false;
+                    _rabbit.SendMessage(rabbitMessage);
                     break;
             }
         }
         game.Condition.lastBotShoot = lastBotShoot;
-        await db.StringSetAsync($"Game_{login}", JsonConvert.SerializeObject(game));
+        await db.Set(login, game);
     }
     
 }

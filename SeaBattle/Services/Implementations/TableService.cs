@@ -6,11 +6,11 @@ using SeaBattle.Services.Interfaces;
 
 namespace SeaBattle.Services.Implementations;
 
-public class TableService:ITableService
+public class TableService : ITableService
 {
     public bool PlaceShip(Table table, Coordinate coordinate, Ship ship)
     {
-        if (CanPlaceShip(table, ship.Lenght, ship.Direction, coordinate))
+        if (CanPlaceShip(table, ship, coordinate))
         {
             for (int i = coordinate.X; i < coordinate.X + ship.Lenght; i++)
             {
@@ -37,12 +37,12 @@ public class TableService:ITableService
         return true;
     }
 
-    public bool CanPlaceShip(Table table, int shipLenght, ShipDirection direction, Coordinate coordinate)
+    public bool CanPlaceShip(Table table, Ship ship, Coordinate coordinate)
     {
         byte size = Constants.TableWidth;
-        if (coordinate.X + shipLenght > size)
+        if (coordinate.X + ship.Lenght > size)
             return false;
-        for (int i = coordinate.X - 1; i < coordinate.X + shipLenght + 1; i++)
+        for (int i = coordinate.X - 1; i < coordinate.X + ship.Lenght + 1; i++)
         {
             if (!(i >= size || i < 0))
             {
@@ -50,7 +50,7 @@ public class TableService:ITableService
                 {
                     if (j >= size || j < 0)
                         continue;
-                    if (direction == ShipDirection.Vertical ? table.Cells[i, j] == TilesType.Ship : table.Cells[j, i] == TilesType.Ship)
+                    if (ship.Direction == ShipDirection.Vertical ? table.Cells[i, j] == TilesType.Ship : table.Cells[j, i] == TilesType.Ship)
                     {
                         return false;
                     }
