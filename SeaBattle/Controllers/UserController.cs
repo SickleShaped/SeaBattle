@@ -14,11 +14,13 @@ public class UserController : Controller
 {
     private readonly IGameService _gameService;
     private readonly IUserService _userService;
+    private readonly IRabbitMqService _rabbitMqService;
 
-    public UserController(IGameService gameService, IUserService userService)
+    public UserController(IGameService gameService, IUserService userService, IRabbitMqService rabbitMqService)
     {
         _gameService = gameService;
         _userService = userService;
+        _rabbitMqService = rabbitMqService;
     }
 
     /// <summary>
@@ -54,6 +56,14 @@ public class UserController : Controller
     {
         string login = HttpContext.Request.Headers.UserAgent.ToString();
         var data = JsonConvert.SerializeObject(await _gameService.MakeTurn(login, JsonConvert.DeserializeObject<MakeTurnDto>(json)));
+        return Ok(data);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetTurns()
+    {
+        string login = HttpContext.Request.Headers.UserAgent.ToString();
+        var data = _rabbitMqService.GetAllMessagesByUser(login);
         return Ok(data);
     }
 }

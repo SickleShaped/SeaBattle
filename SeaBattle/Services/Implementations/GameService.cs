@@ -38,6 +38,7 @@ public class GameService : IGameService
     public async Task<Game> RestartGame(string login)
     {
         await db.Delete(login);
+         _rabbit.Clear(login);
         return await db.Get(login);
     }
 
@@ -104,7 +105,6 @@ public class GameService : IGameService
     private async Task<bool> PlayerTurn(string login, Game game, Coordinate coordinate)
     {
         RabbitMessage rabbitMessage = new RabbitMessage();
-        rabbitMessage.Login = login;
         rabbitMessage.Player = PlayerEnum.Player;
         rabbitMessage.Coordinate = coordinate;
 
@@ -120,7 +120,7 @@ public class GameService : IGameService
                 await db.Set(login, game);
                 
         
-                _rabbit.SendMessage(rabbitMessage);
+                _rabbit.SendMessage(rabbitMessage, login);
                 return false;
 
             case ShootResult.SamePointShooted:
@@ -129,7 +129,7 @@ public class GameService : IGameService
 
             default:
                 game.Condition.LastRequestResult = LastRequestResult.Ok;
-                _rabbit.SendMessage(rabbitMessage);
+                _rabbit.SendMessage(rabbitMessage, login);
 
                 return true;
         }
@@ -195,7 +195,6 @@ public class GameService : IGameService
             }
 
             RabbitMessage rabbitMessage = new RabbitMessage();
-            rabbitMessage.Login = login;
             rabbitMessage.Player = PlayerEnum.Bot;
             rabbitMessage.Coordinate = coordinateBotShoot;
 
@@ -211,12 +210,12 @@ public class GameService : IGameService
                         game.Condition.GameState = GameState.EnemyWin;
                         return;
                     }
-                    _rabbit.SendMessage(rabbitMessage);
+                    _rabbit.SendMessage(rabbitMessage, login);
                     break;
 
                 case ShootResult.Miss:
                     BotNotMiss = false;
-                    _rabbit.SendMessage(rabbitMessage);
+                    _rabbit.SendMessage(rabbitMessage, login);
                     break;
             }
         }

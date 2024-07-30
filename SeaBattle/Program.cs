@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 //using SignalRApp;
 using SeaBattle.Extensions;
+using SeaBattle.Services;
 
 namespace SeaBattle;
 
@@ -27,7 +28,7 @@ public class Program
         app.UseMiddleware<MiddlewareBuilderService>();
         app.UseHttpsRedirection();
         app.UseStaticFiles();
-        //app.MapHub<>("/chat");
+        app.MapHub<RabbitHub>("/hubs/rabbit");
 
 
         app.UseRouting();
