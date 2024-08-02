@@ -23,7 +23,7 @@ public static class DependencyInjectionBuilderService
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<ITableService, TableService>();
         services.AddScoped<IRedisDbService, RedisDbService>();
-        services.AddScoped<IRabbitMqService, RabbitMqService>();
+        services.AddScoped<ProducerService>();
 
         services.AddStackExchangeRedisCache(opt =>
         {

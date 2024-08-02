@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 //using SignalRApp;
 using SeaBattle.Extensions;
 using SeaBattle.Services;
+using SeaBattle.Services.Implementations;
 
 namespace SeaBattle;
 
@@ -15,8 +16,7 @@ public class Program
         builder.Services.AddControllersWithViews();
         var connection = builder.Configuration.GetConnectionString("Default");
         builder.Services.AddDependencyInjection(builder.Configuration);
-        builder.Services.AddSignalR();
-        builder.Services.AddHostedService<RabbitMqListener>();
+        //builder.Services.AddHostedService<ConsumerService>();
         var app = builder.Build();
 
         if (!app.Environment.IsDevelopment())
@@ -28,7 +28,6 @@ public class Program
         app.UseMiddleware<MiddlewareBuilderService>();
         app.UseHttpsRedirection();
         app.UseStaticFiles();
-        app.MapHub<RabbitHub>("/hubs/rabbit");
 
 
         app.UseRouting();

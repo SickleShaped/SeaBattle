@@ -1,4 +1,17 @@
-﻿//var connectionRabbit = new signalR.HubConnectionBuilder().withUrl("/hubs/rabbit").build();
+﻿/*const socket = new WebSocket('ws://localhost:8080');
+socket.addEventListener('open', (event) => {
+    socket.send('Hello Server!');
+});
+
+socket.addEventListener('message', (event) => {
+    console.log('Message from server ', event.data);
+});
+
+socket.addEventListener('close', (event) => {
+    console.log('The connection has been closed');
+});
+*/
+
 var connectionRabbit = new signalR.HubConnectionBuilder().withUrl("https://localhost:7031/hubs/rabbit").build();
 
 var shipwindow = document.getElementById("shipWindow")
@@ -15,7 +28,6 @@ function rejected() {
 
 }
 
-connectionRabbit.start().then(fulfilled, rejected);
 
 
 $.ajax({
