@@ -1,8 +1,9 @@
 ﻿using Confluent.Kafka;
+using SeaBattle.Services.Interfaces;
 using static Confluent.Kafka.ConfigPropertyNames;
 
 namespace SeaBattle.Services.Implementations;
-public class ProducerService
+public class ProducerService: IProducerService
 {
     private readonly IConfiguration _configuration;
 
@@ -25,6 +26,6 @@ public class ProducerService
         var kafkamessage = new Message<Null, string> { Value = message, };
 
         Console.WriteLine("Отправил " + message);
-        var result = await _producer.ProduceAsync($"Game_{login}", kafkamessage);
+        var result = await _producer.ProduceAsync("Games", kafkamessage);
     }
 }

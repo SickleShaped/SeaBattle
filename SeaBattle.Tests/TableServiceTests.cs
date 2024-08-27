@@ -14,6 +14,7 @@ namespace SeaBattle.Tests;
 public class TableServiceTests
 {
     private readonly TableService _tableService;
+    private Table table;
     public TableServiceTests()
     {
         _tableService = new TableService();

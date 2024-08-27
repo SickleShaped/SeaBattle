@@ -18,7 +18,7 @@ public class MiddlewareBuilderService
     {
         try
         {
-             await _next(context);
+            await _next(context);
         }
         catch (Exception ex)
         {

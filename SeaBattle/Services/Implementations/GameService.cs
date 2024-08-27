@@ -18,9 +18,9 @@ public class GameService : IGameService
     private readonly IGamer _botService;
     private readonly ITableService _tableService;
     private readonly IRedisDbService _db;
-    private readonly ProducerService _producerService;
+    private readonly IProducerService _producerService;
 
-    public GameService(IGamer botService, IUserService userService, IRedisDbService db, ITableService tableService, ProducerService producerService)
+    public GameService(IGamer botService, IUserService userService, IRedisDbService db, ITableService tableService, IProducerService producerService)
     {
         _db = db;
         _botService = botService;
@@ -32,6 +32,7 @@ public class GameService : IGameService
 
     public async Task<Game> GetGame(string login)
     {
+
         return await _db.Get(login);
     }
 
@@ -142,8 +143,6 @@ public class GameService : IGameService
         Coordinate coordinateBotShoot = new Coordinate();
         while (BotNotMiss)
         {
-            
-
             Random random = new Random();
 
             if (game.PlayerTable.Cells[lastBotShoot.X, lastBotShoot.Y] == TilesType.Ship &&

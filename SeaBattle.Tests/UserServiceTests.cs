@@ -1,5 +1,9 @@
-﻿using Moq;
+﻿using Castle.Core.Logging;
+using Confluent.Kafka.Admin;
+using Moq;
 using SeaBattle.Models;
+using SeaBattle.Models.AuxilaryModels;
+using SeaBattle.Models.Enums;
 using SeaBattle.Services.Implementations;
 using SeaBattle.Services.Interfaces;
 using StackExchange.Redis;
@@ -15,31 +19,39 @@ namespace SeaBattle.Tests;
 public class UserServiceTests
 {
     [Fact]
-    public void AutoMakeTable_AllShipsPlaced_True()
+    public async void PlaceShip_Corrent_Equeals()
     {
-        /*
-        // Arrange
-        var mockDb = new Mock<IDatabase>();
-        var mockTable = new Mock<ITableService>();
+        //Arrange
+        var mockRedisDb = new Mock<IRedisDbService>();
+        var mockTableService = new Mock<ITableService>();
+        PlaceShipDto dto = new PlaceShipDto();
+        dto.ShipId = 0;
+        dto.CellId = 55;
+        dto.Direction = ShipDirection.Horisontal;
+        var returnedGame = new Game();
 
-        UserService userService = new UserService(mockTable.Object, mockDb.Object);
-        //Act
-        List<Ship> ships = new List<Ship>()
-        {
-            new Ship(4), new Ship(3), new Ship(3), new Ship(2),new Ship(2),
-            new Ship(2), new Ship(1), new Ship(1), new Ship(1), new Ship(1)
-        };
-        var game = userService.AutoMakeTable(ships);
+        var ships = new List<Ship> { new Ship(3) };
+
+        returnedGame.Condition = new GameCondition(ships);
+        returnedGame.PlayerTable = new Table();
+        returnedGame.EnemyTable = new Table();
+
+        Coordinate coordinate = new Coordinate(ShipDirection.Horisontal, 5, 5);
         
-        bool AllShipsPlaced = true;
-        foreach (Ship ship in ships)
-        {
-            if(!ship.IsPlaced)
-                AllShipsPlaced = false;
-        }
-        // Assert
-        Assert.True(AllShipsPlaced);
-        */
+        mockRedisDb.Setup(x => x.Get(It.IsAny<string>())).ReturnsAsync(returnedGame);
+        mockTableService.Setup(x => x.CanPlaceShip(It.IsAny<Table>(), It.IsAny<Ship>(), It.IsAny<Coordinate>())).Returns(true);
 
+        UserService userService = new UserService(mockTableService.Object, mockRedisDb.Object);
+
+        //Act
+
+        var game = await userService.PlaceShip("11", dto);
+        //Assert
+        Assert.True(game.PlayerTable.Cells[5,5] == TilesType.Ship );
     }
+
+    
+    
+    
+
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using SeaBattle.Services.Implementations;
+using SeaBattle.Services.Implementations.Consumer;
 using SeaBattle.Services.Interfaces;
 using StackExchange.Redis;
 
@@ -23,7 +24,8 @@ public static class DependencyInjectionBuilderService
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<ITableService, TableService>();
         services.AddScoped<IRedisDbService, RedisDbService>();
-        services.AddScoped<ProducerService>();
+        services.AddScoped<IProducerService, ProducerService>();
+        services.AddScoped<SocketService>();
 
         services.AddStackExchangeRedisCache(opt =>
         {
