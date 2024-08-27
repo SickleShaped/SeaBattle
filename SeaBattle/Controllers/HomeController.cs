@@ -1,9 +1,15 @@
+using Confluent.Kafka;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using SeaBattle.Models.AuxilaryModels;
 using SeaBattle.Services.Implementations;
+using SeaBattle.Services.Implementations.Consumer;
 using SeaBattle.Services.Interfaces;
 using System.Diagnostics;
+using System.Drawing;
+using System.Net;
+using System.Net.WebSockets;
+using System.Text;
 
 namespace SeaBattle.Controllers;
 
@@ -32,6 +38,7 @@ public class HomeController : Controller
     {
         string login = HttpContext.Request.Headers.UserAgent.ToString();
         var data = JsonConvert.SerializeObject(await _gameService.GetGame(login));
+        
         return Ok(data);
     }
 

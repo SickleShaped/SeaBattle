@@ -17,34 +17,35 @@ public class GameService : IGameService
     private readonly IUserService _userService;
     private readonly IGamer _botService;
     private readonly ITableService _tableService;
-    private readonly IRedisDbService db;
-    private readonly IRabbitMqService _rabbit;
+    private readonly IRedisDbService _db;
+    private readonly IProducerService _producerService;
 
-    public GameService(IGamer botService, IUserService userService, IRedisDbService db, ITableService tableService, IRabbitMqService rabbit)
+    public GameService(IGamer botService, IUserService userService, IRedisDbService db, ITableService tableService, IProducerService producerService)
     {
-        this.db = db;
+        _db = db;
         _botService = botService;
         _userService = userService;
         _tableService = tableService;
-        _rabbit = rabbit;
+        _producerService = producerService;
     }
 
 
     public async Task<Game> GetGame(string login)
     {
-        return await db.Get(login);
+
+        return await _db.Get(login);
     }
 
     public async Task<Game> RestartGame(string login)
     {
-        await db.Delete(login);
-         _rabbit.Clear(login);
-        return await db.Get(login);
+        await _db.Delete(login);
+         //_rabbit.Clear(login);
+        return await _db.Get(login);
     }
 
     public async Task<Game> StartGame(string login)
     {
-        var game = await db.Get(login);
+        var game = await _db.Get(login);
         bool allShipsPlaced = true;
         foreach (var ship in game.Condition.Ships)
         {
@@ -56,7 +57,7 @@ public class GameService : IGameService
         }
         game.Condition.GameState = GameState.Game;
         game.Condition.LastRequestResult = LastRequestResult.Ok;
-        await db.Set(login, game);
+        await _db.Set(login, game);
         return game;
 
     }
@@ -64,7 +65,7 @@ public class GameService : IGameService
 
     public async Task<Game> MakeTurn(string login, MakeTurnDto dto)
     {
-        Game game = (await db.Get(login));
+        Game game = (await _db.Get(login));
         if (game.Condition.GameState != GameState.Game)
         {
             game.Condition.LastRequestResult = LastRequestResult.ShipsArentPlaced;
@@ -85,7 +86,7 @@ public class GameService : IGameService
     
     public async Task<Game> AutoMakeTablePlayer(string login)
     {
-        var game = await db.Get(login);
+        var game = await _db.Get(login);
         if (game.Condition.GameState != GameState.PlacingShips)
         {
             game.Condition.LastRequestResult = LastRequestResult.ShipsArentPlaced;
@@ -98,15 +99,16 @@ public class GameService : IGameService
         }
         game.Condition.LastRequestResult = LastRequestResult.Ok;
         
-        await db.Set(login, game);
+        await _db.Set(login, game);
         return game;
     }
 
     private async Task<bool> PlayerTurn(string login, Game game, Coordinate coordinate)
     {
-        RabbitMessage rabbitMessage = new RabbitMessage();
-        rabbitMessage.Player = PlayerEnum.Player;
-        rabbitMessage.Coordinate = coordinate;
+        KafkaMessage kafkaMessage = new KafkaMessage();
+        kafkaMessage.Login =  login;
+        kafkaMessage.Player = PlayerEnum.Player;
+        kafkaMessage.Coordinate = coordinate;
 
         ShootResult shootResult = _userService.Shoot(game.EnemyTable, coordinate);
         switch (shootResult)
@@ -117,10 +119,9 @@ public class GameService : IGameService
                     game.Condition.GameState = GameState.PlayerWin;
                 }
                 game.Condition.LastRequestResult = LastRequestResult.Ok;
-                await db.Set(login, game);
-                
-        
-                _rabbit.SendMessage(rabbitMessage, login);
+                await _db.Set(login, game);
+
+                _producerService.ProduceAsync(login, JsonConvert.SerializeObject(kafkaMessage));
                 return false;
 
             case ShootResult.SamePointShooted:
@@ -129,8 +130,7 @@ public class GameService : IGameService
 
             default:
                 game.Condition.LastRequestResult = LastRequestResult.Ok;
-                _rabbit.SendMessage(rabbitMessage, login);
-
+                _producerService.ProduceAsync(login, JsonConvert.SerializeObject(kafkaMessage));
                 return true;
         }
     }
@@ -143,8 +143,6 @@ public class GameService : IGameService
         Coordinate coordinateBotShoot = new Coordinate();
         while (BotNotMiss)
         {
-            
-
             Random random = new Random();
 
             if (game.PlayerTable.Cells[lastBotShoot.X, lastBotShoot.Y] == TilesType.Ship &&
@@ -194,9 +192,10 @@ public class GameService : IGameService
                 coordinateBotShoot.Y = random.Next(0, Constants.TableWidth);
             }
 
-            RabbitMessage rabbitMessage = new RabbitMessage();
-            rabbitMessage.Player = PlayerEnum.Bot;
-            rabbitMessage.Coordinate = coordinateBotShoot;
+            KafkaMessage kafkaMessage = new KafkaMessage();
+            kafkaMessage.Login = login;
+            kafkaMessage.Player = PlayerEnum.Bot;
+            kafkaMessage.Coordinate = coordinateBotShoot;
 
             ShootResult result = _botService.Shoot(game.PlayerTable, coordinateBotShoot);
 
@@ -210,17 +209,17 @@ public class GameService : IGameService
                         game.Condition.GameState = GameState.EnemyWin;
                         return;
                     }
-                    _rabbit.SendMessage(rabbitMessage, login);
+                    _producerService.ProduceAsync(login, JsonConvert.SerializeObject(kafkaMessage));
                     break;
 
                 case ShootResult.Miss:
                     BotNotMiss = false;
-                    _rabbit.SendMessage(rabbitMessage, login);
+                    _producerService.ProduceAsync(login, JsonConvert.SerializeObject(kafkaMessage));
                     break;
             }
         }
         game.Condition.lastBotShoot = lastBotShoot;
-        await db.Set(login, game);
+        await _db.Set(login, game);
     }
     
 }

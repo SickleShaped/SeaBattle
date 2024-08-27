@@ -68,7 +68,7 @@ public abstract class Gamer : IGamer
         return false;
     }
 
-    public Table CheckShipIsDead(Table table, Coordinate coordinate)
+    private Table CheckShipIsDead(Table table, Coordinate coordinate)
     {
         DeadShipSeeker seeker = new DeadShipSeeker(coordinate);
         if (table.CellsVisibility[coordinate.X, coordinate.Y] == TilesVisibility.Unchecked) return table;

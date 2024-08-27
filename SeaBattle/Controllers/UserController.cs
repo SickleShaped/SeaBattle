@@ -14,13 +14,13 @@ public class UserController : Controller
 {
     private readonly IGameService _gameService;
     private readonly IUserService _userService;
-    private readonly IRabbitMqService _rabbitMqService;
+    //private readonly ProducerService _producerService;
 
-    public UserController(IGameService gameService, IUserService userService, IRabbitMqService rabbitMqService)
+    public UserController(IGameService gameService, IUserService userService/*, ProducerService producerService*/)
     {
         _gameService = gameService;
         _userService = userService;
-        _rabbitMqService = rabbitMqService;
+        //_producerService = producerService;
     }
 
     /// <summary>
@@ -63,7 +63,7 @@ public class UserController : Controller
     public async Task<IActionResult> GetTurns()
     {
         string login = HttpContext.Request.Headers.UserAgent.ToString();
-        var data = _rabbitMqService.GetAllMessagesByUser(login);
+        var data = 0; // = _rabbitMqService.GetAllMessagesByUser(login);
         return Ok(data);
     }
 }

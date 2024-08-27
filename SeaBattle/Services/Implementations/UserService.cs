@@ -10,11 +10,8 @@ public class UserService : Gamer, IUserService
 {
     private readonly IRedisDbService _db;
 
-    public UserService(ITableService tableService, IRedisDbService db) : base(tableService) =>
+    public UserService(ITableService tableService, IRedisDbService db) : base(tableService) => _db = db;
     
-        _db = db;
-    
-
     public async Task<Game> PlaceShip(string login, PlaceShipDto dto)
     {
         Game game = await _db.Get(login);

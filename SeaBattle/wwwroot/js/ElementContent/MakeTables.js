@@ -1,26 +1,10 @@
-﻿//var connectionRabbit = new signalR.HubConnectionBuilder().withUrl("/hubs/rabbit").build();
-var connectionRabbit = new signalR.HubConnectionBuilder().withUrl("https://localhost:7031/hubs/rabbit").build();
-
-var shipwindow = document.getElementById("shipWindow")
-
-connectionRabbit.on("newOrder", () => {
-    console.log("аа")
-    WriteTurns();
-});
-
-function fulfilled() {
-
-}
-function rejected() {
-
-}
-
-connectionRabbit.start().then(fulfilled, rejected);
+﻿var shipwindow = document.getElementById("shipWindow")
+CreateWebSocket();
 
 
 $.ajax({
     type: "GET",
-    url: 'https://localhost:7031/Home/GetGame',
+    url: '/Home/GetGame',
     dataType: "json",
     success: function (result) {
 
