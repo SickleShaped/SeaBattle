@@ -31,6 +31,7 @@ public class ConsumerHostedService : BackgroundService
             BootstrapServers = configuration["Kafka:BootstrapServers"],
             GroupId = "GameGroup",
             AutoOffsetReset = AutoOffsetReset.Earliest,
+            BrokerAddressFamily = BrokerAddressFamily.V4
         };
         _consumer = new ConsumerBuilder<Ignore, string>(consumerConfig).Build();
     }

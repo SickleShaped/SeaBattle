@@ -3,7 +3,7 @@
 
     $.ajax({
     type: "Post",
-        url: 'https://localhost:7031/User/PlaceAllShip',
+        url: '/User/PlaceAllShip',
         success: function (result) {
             DrawAllShips(result)
             PaintShips(result)

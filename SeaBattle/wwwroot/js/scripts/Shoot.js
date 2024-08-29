@@ -5,7 +5,7 @@
 
     $.ajax({
         type: "PUT",
-        url: 'https://localhost:7031/User/Shoot',
+        url: '/User/Shoot',
         data: jQuery.param({ json: jsonparams }),
         success: function (result) {
             DrawAllShips(result)
