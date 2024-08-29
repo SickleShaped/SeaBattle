@@ -27,10 +27,16 @@ public static class DependencyInjectionBuilderService
         services.AddScoped<IProducerService, ProducerService>();
         services.AddScoped<SocketService>();
 
-        services.AddStackExchangeRedisCache(opt =>
+        /*services.AddStackExchangeRedisCache(opt =>
         {
             opt.Configuration = configuration.GetConnectionString("Default");
             opt.InstanceName = "Game";
+        });*/
+
+        services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = configuration.GetConnectionString("Default"); ; // redis is the container name of the redis service. 6379 is the default port
+            options.InstanceName = "SampleInstance";
         });
 
         return services;

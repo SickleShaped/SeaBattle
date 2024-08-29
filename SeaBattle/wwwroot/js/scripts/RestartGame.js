@@ -2,7 +2,7 @@
     window.sessionStorage.clear();
     $.ajax({
         type: "Put",
-        url: 'https://localhost:7031/Home/RestartGame',
+        url: '/Home/RestartGame',
         success: function (result) {
             DrawAllShips(result)
             PaintShips(result)

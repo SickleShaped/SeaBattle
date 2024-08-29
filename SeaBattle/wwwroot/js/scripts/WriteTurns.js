@@ -2,7 +2,7 @@
 
     $.ajax({
         type: "GET",
-        url: 'https://localhost:7031/User/GetTurns',
+        url: '/User/GetTurns',
         dataType: "json",
         success: function (result) {
             console.log(result)

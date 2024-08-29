@@ -1,6 +1,5 @@
 ﻿function SelectThisShip(event, ship)
 {
-    console.log("МОАА")
     console.log(ship)
     console.log(event.target.id)
     const target = event.target.id;
