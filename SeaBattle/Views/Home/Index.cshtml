@@ -13,27 +13,33 @@
     <script src="https://code.jquery.com/jquery-1.9.1.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
     
+    
 </head>
 
 <body>
 
     <div class="text-center">
-
+        
         <script type="text/javascript" src="~/js/scripts/StartGame.js"> </script>
         <script type="text/javascript" src="~/js/scripts/RestartGame.js"> </script>
         <script type="text/javascript" src="~/js/scripts/PlaceShip.js"> </script>
         <script type="text/javascript" src="~/js/scripts/FlipsShip.js"> </script>
-        <script type="text/javascript" src="~/js/scripts/GetCurrentShipLenght.js"> </script>
         <script type="text/javascript" src="~/js/scripts/PaintShips.js"> </script>
         <script type="text/javascript" src="~/js/scripts/StartGame.js"> </script>
         <script type="text/javascript" src="~/js/scripts/Shoot.js"> </script>
+        <script type="text/javascript" src="~/js/scripts/DrawAllShips.js"> </script>
+        <script type="text/javascript" src="~/js/scripts/SelectThisShip.js"> </script>
+        <script type="text/javascript" src="~/js/scripts/PlayerRandomlyPlaceAllShips.js"> </script>
+        <script type="text/javascript" src="~/js/scripts/WriteErrors.js"> </script>
+        <script type="text/javascript" src="~/js/scripts/WriteTurns.js"> </script>
+        <script type="text/javascript" src="~/js/scripts/CreateWebSocket.js"> </script>
 
         <h1 draggable="true" class="display-4">Морской бой</h1>
-
+        <p id="errorMessageWindow"> </p>
         <div id="shipWindow" style="shipplacingwindow">
         </div>
-
-        <script type="text/javascript" src="~/js/ElementContent/ShipsWindow.js"> </script>
+        
+        
 
 
         <table cellspacing="5" class="shiptable-left">

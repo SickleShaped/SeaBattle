@@ -1,60 +1,69 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using SeaBattle.Services.Game;
-using SeaBattle.Services.ShipService;
-using SeaBattle.Services.UserService;
+using SeaBattle.Models.AuxilaryModels;
+using SeaBattle.Services.Implementations;
+using SeaBattle.Services.Interfaces;
+using System.Diagnostics;
 
-namespace SeaBattle.Controllers
+namespace SeaBattle.Controllers;
+
+/// <summary>
+/// Контроллер пользователей
+/// </summary>
+public class UserController : Controller
 {
-    /// <summary>
-    /// Контроллер пользователей
-    /// </summary>
-    public class UserController : Controller
+    private readonly IGameService _gameService;
+    private readonly IUserService _userService;
+    //private readonly ProducerService _producerService;
+
+    public UserController(IGameService gameService, IUserService userService/*, ProducerService producerService*/)
     {
-        private readonly ILogger<ShipController> _logger;
-        private readonly IGameService _gameService;
-        private readonly IUserService _userService;
+        _gameService = gameService;
+        _userService = userService;
+        //_producerService = producerService;
+    }
 
-        public UserController(ILogger<ShipController> logger, IGameService gameService, IUserService userService)
-        {
-            _logger = logger;
-            _gameService = gameService;
-            _userService = userService;
-        }
+    /// <summary>
+    /// Поставить корабль
+    /// </summary>
+    /// <param name="json"></param>
+    /// <returns></returns>
 
-        /// <summary>
-        /// Поставить корабль
-        /// </summary>
-        /// <param name="json"></param>
-        /// <returns></returns>
-        public IActionResult PlaceShip(string json)
-        {
-            try
-            {
-                _userService.PlaceShip(json);
-            }
-            catch
-            {
-                return BadRequest();
-            }
-            string result = JsonConvert.SerializeObject(true);
-            return Ok(result);
-        }
+    [HttpPost]
+    public async Task<IActionResult> PlaceShip(string json)
+    {
+        string login = HttpContext.Request.Headers.UserAgent.ToString();
+        var data = JsonConvert.SerializeObject(await _userService.PlaceShip(login, JsonConvert.DeserializeObject<PlaceShipDto>(json)));
+        return Ok(data);
+    }
 
-        /// <summary>
-        /// Выстрелить по полю
-        /// </summary>
-        /// <param name="json"></param>
-        /// <returns></returns>
-        public IActionResult Shoot(string json)
-        {
-            try
-            {
-                _gameService.MakeTurn(json);
-            }
-            catch { return BadRequest(); }
+    [HttpPost]
+    public async Task<IActionResult> PlaceAllShip(string json)
+    {
+        string login = HttpContext.Request.Headers.UserAgent.ToString();
+        var data = JsonConvert.SerializeObject(await _gameService.AutoMakeTablePlayer(login));
+        return Ok(data);
+    }
+    
+    /// <summary>
+    /// Выстрелить по полю
+    /// </summary>
+    /// <param name="json"></param>
+    /// <returns></returns>
 
-            return Ok(true);
-        }
+    [HttpPut]
+    public async Task<IActionResult> Shoot(string json)
+    {
+        string login = HttpContext.Request.Headers.UserAgent.ToString();
+        var data = JsonConvert.SerializeObject(await _gameService.MakeTurn(login, JsonConvert.DeserializeObject<MakeTurnDto>(json)));
+        return Ok(data);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetTurns()
+    {
+        string login = HttpContext.Request.Headers.UserAgent.ToString();
+        var data = 0; // = _rabbitMqService.GetAllMessagesByUser(login);
+        return Ok(data);
     }
 }

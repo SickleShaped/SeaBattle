@@ -1,17 +1,20 @@
 ﻿function PaintShips(result) {
-    const x = result
+    var x = 0;
+    if (typeof result === 'object') {
+        x = result;
+    }
+    else {
+        x = JSON.parse(result);
+    }
+    
     const playertable = document.getElementById("ftable");
-    console.log(result);
     const enemytable = document.getElementById("stable");
     for (i = 0; i < 10; i++) {
         for (j = 0; j < 10; j++) {
             const playerCell = document.getElementById(i * 10 + j);
-            const enemyCell = document.getElementById(i * 10 + j + 100);
-            
+            const enemyCell = document.getElementById( -(i * 10 + j)-1);
 
-            
-
-            if (result.Condition.PlayerWin)
+            if (x.Condition.GameState == 2)
             {
                 enemyCell.style.backgroundColor = "Black"
             }
@@ -21,11 +24,14 @@
                 else {
                     if (x.EnemyTable.Cells[i][j] == 1) { enemyCell.style.backgroundColor = "ForestGreen" }
                     else { enemyCell.style.backgroundColor = "black" }
+
+
                 }
+
                 
             }
 
-            if (result.Condition.EnemyWin)
+            if (x.Condition.GameState == 3)
             {
                 playerCell.style.backgroundColor = "Black"
             }

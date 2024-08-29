@@ -1,13 +1,16 @@
-﻿
+﻿var shipwindow = document.getElementById("shipWindow")
+CreateWebSocket();
+
 
 $.ajax({
     type: "GET",
-    url: 'https://localhost:7031/Home/GetGame',
+    url: '/Home/GetGame',
     dataType: "json",
     success: function (result) {
 
-        console.log(result);
-        
+        DrawAllShips(result)
+        WriteErrors(result)
+        PaintShips(result)
         return result
     },
     error: function (error) {
@@ -42,10 +45,14 @@ for (var i = 0; i < 10; i++)
         var cell1 = document.createElement('td');
         cell1.classList.add('enemyblock');
         cell1.setAttribute("onclick", "Shoot(event)");
-        cell1.setAttribute("id", i * 10 + j + 100);
+        cell1.setAttribute("id", -(i * 10 + j)-1);
         rowrow.appendChild(cell1);
 
     }
     table1.appendChild(rowrow);
 }
+
+
+var shipdraw = document.createElement("table");
+//positionship.setAttribute("id", "textposition");
 

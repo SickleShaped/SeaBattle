@@ -5,12 +5,13 @@
 
     $.ajax({
         type: "PUT",
-        url: 'https://localhost:7031/User/Shoot',
-        dataType: "json",
+        url: '/User/Shoot',
         data: jQuery.param({ json: jsonparams }),
-        success: function () {
-            //console.log(result.playerWin);
-            window.location.reload();
+        success: function (result) {
+            DrawAllShips(result)
+            PaintShips(result)
+            WriteErrors(result)
+            return result
         },
         error: function (error) {
             console.error('Error:', error.statusText);

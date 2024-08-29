@@ -1,74 +1,62 @@
+using Confluent.Kafka;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Newtonsoft.Json;
-using SeaBattle.Models;
 using SeaBattle.Models.AuxilaryModels;
-using SeaBattle.Models.Enums;
-using SeaBattle.Services.Bot;
-using SeaBattle.Services.Game;
+using SeaBattle.Services.Implementations;
+using SeaBattle.Services.Implementations.Consumer;
+using SeaBattle.Services.Interfaces;
 using System.Diagnostics;
+using System.Drawing;
+using System.Net;
+using System.Net.WebSockets;
+using System.Text;
 
-namespace SeaBattle.Controllers
+namespace SeaBattle.Controllers;
+
+/// <summary>
+/// Основной контроллер
+/// </summary>
+public class HomeController : Controller
 {
-    /// <summary>
-    /// Основной контроллер
-    /// </summary>
-    public class HomeController : Controller
+    private readonly IGameService _gameService;
+    private readonly IGamer _botService;
+
+    public HomeController(IGameService gameService, IGamer botService)
     {
-        private readonly ILogger<HomeController> _logger;
-        private readonly IGameService _gameService;
-        private readonly IBotService _botService;
-
-        public HomeController(ILogger<HomeController> logger, IGameService gameService, IBotService botService)
-        {
-            _logger = logger;
-            _gameService = gameService;
-            _botService = botService;
-        }
-
-        /// <summary>
-        /// Получить текущее состояние игры
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult GetGame()
-        {
-            var data = _gameService.GetGameData();
-            return Ok(data);
-        }
-
-        /// <summary>
-        /// Рестартнуть игру
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult RestartGame()
-        {
-            var data = _gameService.RestartGame();
-            return Ok(data);
-        }
-
-        /// <summary>
-        /// Отрисовка старта
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult Index()
-        {
-            return View();
-        }
-
-        /// <summary>
-        /// Начать игру
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult StartGame()
-        {
-            try
-            {
-                _gameService.StartGame();
-            }
-            catch (Exception ex) { return BadRequest(); }
-
-            return Ok(true);
-        }
-
+        _gameService = gameService;
+        _botService = botService;
     }
+
+    [HttpGet]
+    public IActionResult Index()
+    {
+        return View();
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetGame()
+    {
+        string login = HttpContext.Request.Headers.UserAgent.ToString();
+        var data = JsonConvert.SerializeObject(await _gameService.GetGame(login));
+        
+        return Ok(data);
+    }
+
+    [HttpPut]
+    public async Task<IActionResult> RestartGame()
+    {
+        string login = HttpContext.Request.Headers.UserAgent.ToString();
+        var data = JsonConvert.SerializeObject(await _gameService.RestartGame(login));
+        return Ok(data);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> StartGame()
+    {
+        string login = HttpContext.Request.Headers.UserAgent.ToString();
+        var data = JsonConvert.SerializeObject(await _gameService.StartGame(login));
+        return Ok(data);
+    }
+
+    
 }

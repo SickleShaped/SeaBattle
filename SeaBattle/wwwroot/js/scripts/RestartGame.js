@@ -1,12 +1,13 @@
 ﻿function RestartGame() {
     window.sessionStorage.clear();
     $.ajax({
-        type: "Get",
-        url: 'https://localhost:7031/Home/RestartGame',
+        type: "Put",
+        url: '/Home/RestartGame',
         success: function (result) {
-            //console.log(result)
-
-            window.location.reload();
+            DrawAllShips(result)
+            PaintShips(result)
+            WriteErrors(result)
+            return result
         },
         error: function (error) {
             console.error('Error:', error);

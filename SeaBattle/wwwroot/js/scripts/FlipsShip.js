@@ -1,27 +1,14 @@
-﻿function FlipShip() {
-    $.ajax({
-        type: "Post",
-        url: 'https://localhost:7031/Ship/FlipShip',
-        dataType: "json",
+﻿function FlipShip(event) {
+    const target = event.target;
+    if ((sessionStorage.getItem("textposition") != "Горизонтально"))
+    {
+        sessionStorage.setItem("textposition", "Горизонтально")
+        target.textContent = "Горизонтально"
+    }
+    else {
+        sessionStorage.setItem("textposition", "Вертикально")
+        target.textContent = "Вертикально"
+    }
 
-        success: function (result) {
-
-            sessionStorage.setItem("ShipLenght", result.ShipLenght)
-
-            if (result.Direction == 0) {
-                sessionStorage.setItem("textposition", "Горизонтально")
-            }
-            else {
-                sessionStorage.setItem("textposition", "Вертикально")
-            }
-
-            window.location.reload();
-            
-            
-        },
-        error: function (error) {
-            console.error('Error:', error);
-        }
-    });
 }
 

@@ -1,38 +1,82 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http.HttpResults;
 using SeaBattle.Extensions;
 using SeaBattle.Services;
+using SeaBattle.Services.Implementations.Consumer;
+using System.Net.WebSockets;
 
-namespace SeaBattle
+namespace SeaBattle;
+
+public class Program
 {
-    public class Program
+    public static void Main()
     {
-        public static void Main(string[] args)
+        var builder = WebApplication.CreateBuilder();
+
+
+        builder.Services.AddControllersWithViews();
+        var connection = builder.Configuration.GetConnectionString("Default");
+        builder.Services.AddDependencyInjection(builder.Configuration);
+        //builder.Services.AddHostedService<ConsumerHostedService>();
+        var app = builder.Build();
+
+        if (!app.Environment.IsDevelopment())
         {
-            var builder = WebApplication.CreateBuilder(args);
+            app.UseHsts();
+        }
 
-            builder.Services.AddControllersWithViews();
-            builder.Services.AddMemoryCache();
-            builder.Services.AddDependencyInjection(); //Нужно ли тут DI?
- 
+        app.UseMiddleware<MiddlewareBuilderService>();
+        app.UseHttpsRedirection();
+        app.UseStaticFiles();
+        var webSocketOptions = new WebSocketOptions
+        {
+            KeepAliveInterval = TimeSpan.FromMinutes(2)
+        };
+        app.UseWebSockets(webSocketOptions);
 
-            var app = builder.Build();
-
-            if (!app.Environment.IsDevelopment())
+        app.Use(async (context, next) =>
+        {
+            if (context.Request.Path == "/ws")
             {
-                app.UseHsts();
+                if (context.WebSockets.IsWebSocketRequest)
+                {
+                    var webSocket = await context.WebSockets.AcceptWebSocketAsync();
+                    var login = context.Request.Headers.UserAgent.ToString();
+                    SocketService.SetSocket(login, webSocket, builder.Configuration);
+                    var x = SocketService.GetSocket(login);
+                    await Echo(webSocket);
+                }
+                else
+                {
+                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                }
+            }
+            else
+            {
+                await next(context);
             }
 
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
+        });
 
-            app.UseRouting();
+        app.UseRouting();
 
-            app.UseAuthorization();
+        app.MapControllerRoute(
+            name: "default",
+            pattern: "{controller=Home}/{action=Index}/{id?}");
 
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+        app.Run();
+    }
 
-            app.Run();
+    private static async Task Echo(WebSocket webSocket)
+    {
+        var buffer = new byte[1024 * 4];
+        WebSocketReceiveResult result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+        while (!result.CloseStatus.HasValue)
+        {
+            await webSocket.SendAsync(new ArraySegment<byte>(buffer, 0, result.Count), result.MessageType, result.EndOfMessage, CancellationToken.None);
+
+            result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
         }
+        await webSocket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
     }
 }
